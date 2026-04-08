@@ -6,8 +6,8 @@
     <title>WebDocTruyen - Read Stories Online</title>
     <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        /* GIỮ NGUYÊN GIAO DIỆN CỦA BẠN */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -80,10 +80,8 @@
         .story-card h4 { font-size: 0.95rem; margin: 5px 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-box { height: 350px; overflow-y: auto; border: 1px solid #edf2f7; padding: 15px; background: #f9fafb; border-radius: 8px; margin-bottom: 10px; }
 
-        /* ĐIỀU CHỈNH DROPDOWN SANG CHẾ ĐỘ CLICK */
         .user-dropdown { position: relative; cursor: pointer; padding: 5px 0; }
 
-        /* Xóa dòng :hover cũ để menu không tự hiện khi di chuột */
         .user-dropdown:hover .dropdown-content { display: none; }
 
         .dropdown-content {
@@ -101,7 +99,6 @@
             border: 1px solid #e2e8f0;
         }
 
-        /* Hiển thị khi có class active (được kích hoạt bởi JS) */
         .user-dropdown.active .dropdown-content { display: block !important; }
 
         #userContextMenu {
@@ -206,9 +203,24 @@
                 <h3>💬 Chat cộng đồng</h3>
                 <div class="chat-box" id="chatContainer">
                     <div th:each="msg : ${chatMessages}" style="margin-bottom: 12px; font-size: 14px;">
-                        <b style="color: #2196f3; cursor: pointer;" th:onclick="showUserContextMenu(event, [[${msg.user.username}]], [[${msg.user.id}]])" th:text="${msg.user.username}"></b>:
+                        <b style="color: #2196f3; cursor: pointer;"
+                           th:onclick="showUserContextMenu(event, [[${msg.user.username}]], [[${msg.user.id}]])"
+                           th:text="${msg.user.username}"></b>:
                         <span th:text="${msg.content}"></span>
                     </div>
+                </div>
+
+                <form th:if="${username != null}" id="chatForm" style="display: flex; gap: 8px; margin-top: 15px;">
+                    <input type="text" id="chatInput" placeholder="Nhập tin nhắn..."
+                           style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; outline: none;" required>
+                    <button type="submit"
+                            style="background: #2196f3; color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        Gửi
+                    </button>
+                </form>
+
+                <div th:if="${username == null}" style="margin-top: 10px; font-size: 13px; color: #718096;">
+                    🔑 Vui lòng đăng nhập để chat.
                 </div>
             </div>
         </div>
