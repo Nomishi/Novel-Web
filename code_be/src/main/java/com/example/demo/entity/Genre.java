@@ -19,6 +19,5 @@ public class Genre {
     @Column(unique = true, nullable = false)
     private String slug;
     @ManyToMany(mappedBy = "genres")
-    @Builder.Default
     private Set<Story> stories = new HashSet<>();
 }

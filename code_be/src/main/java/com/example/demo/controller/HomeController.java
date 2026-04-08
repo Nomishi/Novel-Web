@@ -2,9 +2,8 @@ package com.example.demo.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.demo.service.StoryService;
@@ -12,9 +11,7 @@ import com.example.demo.repository.ReadingProgressRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ChatMessageRepository;
 import com.example.demo.entity.User;
-import com.example.demo.entity.ReadingProgress;
 import lombok.RequiredArgsConstructor;
-
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
@@ -22,7 +19,6 @@ public class HomeController {
     private final ReadingProgressRepository progressRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
-    
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails != null) {
@@ -30,16 +26,12 @@ public class HomeController {
             boolean isAdmin = userDetails.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ADMIN"));
             model.addAttribute("isAdmin", isAdmin);
-            
             User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
             if (user != null) {
-                Page<ReadingProgress> sidebarHistory = progressRepository
-                        .findByUserIdOrderByLastReadAtDesc(user.getId(), PageRequest.of(0, 5));
                 model.addAttribute("readingHistory",
-                        sidebarHistory.getContent());
+                        progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId()));
             }
         }
-        model.addAttribute("mostNominatedStories", storyService.getMostNominatedStories(10));
         model.addAttribute("topViewed", storyService.getTopViewedStories(20));
         model.addAttribute("recentlyUpdated", storyService.getRecentlyUpdatedStories(10));
         model.addAttribute("randomStories", storyService.getRandomStories(20));

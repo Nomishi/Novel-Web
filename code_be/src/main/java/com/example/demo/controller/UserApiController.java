@@ -1,4 +1,5 @@
 package com.example.demo.controller;
+
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserApiController {
     private final UserRepository userRepository;
+
     @PostMapping("/reading-time")
     public ResponseEntity<Void> updateReadingTime(@RequestParam int seconds, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -31,6 +34,23 @@ public class UserApiController {
             user.setReadingTimeSeconds(currentSeconds + actualSeconds);
             userRepository.save(user);
             return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/claim-nomination-ticket")
+    public ResponseEntity<Long> claimNominationTicket(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+        String username = authentication.getName();
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            long currentTickets = user.getNominationTickets() != null ? user.getNominationTickets() : 0L;
+            user.setNominationTickets(currentTickets + 1);
+            userRepository.save(user);
+            return ResponseEntity.ok(user.getNominationTickets());
         }
         return ResponseEntity.notFound().build();
     }
