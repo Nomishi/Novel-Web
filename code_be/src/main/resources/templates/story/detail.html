@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --border-color: #e2e8f0; /* Hoặc màu sắc bạn muốn */
+        }
         .story-header {
             display: flex;
             gap: 3rem;
@@ -189,6 +192,16 @@
             color: #2563eb;
             padding-left: 2.25rem;
             /* Slight indent animation */
+        }
+
+        .fas, .fab, .far, .fa-solid, .fa-regular {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
         }
     </style>
 </head>
