@@ -32,9 +32,9 @@ public class HomeController {
                         progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId()));
             }
         }
-        model.addAttribute("topViewed", storyService.getTopViewedStories(20));
-        model.addAttribute("recentlyUpdated", storyService.getRecentlyUpdatedStories(10));
-        model.addAttribute("randomStories", storyService.getRandomStories(20));
+        model.addAttribute("topViewed", storyService.getTopViewedStories(8));
+        model.addAttribute("recentlyUpdated", storyService.getRecentlyUpdatedStories(8));
+        model.addAttribute("randomStories", storyService.getRandomStories(4));
         model.addAttribute("chatMessages", chatMessageRepository
                 .findLatestMessages(PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "createdAt"))));
         model.addAttribute("topReaders", userRepository.findTop10ByOrderByReadingTimeSecondsDesc());
