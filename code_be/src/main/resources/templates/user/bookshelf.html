@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookshelf - WebDocTruyen</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
     <style>
         .tabs {
             display: flex;
@@ -43,7 +43,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar" th:replace="~{index :: .navbar}"></nav>
+    <nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
     <div class="container" style="padding: 2rem 1rem;">
         <h2>My Bookshelf</h2>
         <div class="tabs">
