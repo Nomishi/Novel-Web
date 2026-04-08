@@ -4,16 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebDocTruyen - Read Stories Online</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f9;
-            color: #333;
-        }
 
         .navbar {
             display: flex;
@@ -127,7 +121,7 @@
 </head>
 <body>
 
-<nav class="navbar">
+<nav class="navbar" th:fragment="common-navbar">
     <a th:href="@{/}" class="logo">🚀 WebDocTruyen</a>
     <div class="menu">
         <a th:href="@{/}">🏠 Trang chủ</a>
@@ -228,7 +222,6 @@
 </div>
 
 <script th:inline="javascript">
-    // Hàm bật tắt Menu
     function toggleUserMenu(event) {
         event.stopPropagation();
         const dropdown = document.getElementById('userDropdown');
@@ -243,7 +236,6 @@
                 dropdown.classList.remove('active');
             }
         }
-        // Đóng context menu
         document.getElementById('userContextMenu').style.display = 'none';
     });
 

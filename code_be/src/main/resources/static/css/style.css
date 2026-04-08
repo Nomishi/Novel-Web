@@ -1,13 +1,63 @@
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    background: #f4f6f9;
+    color: #333;
+    -webkit-font-smoothing: antialiased; /* Giúp chữ hiển thị mượt hơn trên máy Mac/iOS */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* TOPBAR & NAVIGATION (Dùng chung cho mọi trang) */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #00bcd4, #2196f3) !important;
+    padding: 15px 40px;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Định dạng các liên kết trên Navbar */
+.navbar a, .navbar span {
+    text-decoration: none;
+    color: white !important;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    color: #ffeb3b !important;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.menu {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+/* USER DROPDOWN (CHẾ ĐỘ CLICK) */
+
 /* Container chính */
 .user-dropdown {
     position: relative;
     display: inline-block;
-    padding: 10px 0; /* Vùng đệm dọc */
+    padding: 5px 0;
     cursor: pointer;
     z-index: 1000;
 }
 
-/* Biểu tượng tam giác tự động */
 .user-name-trigger::after {
     content: ' ▼';
     font-size: 0.7em;
@@ -22,9 +72,9 @@
     transform: rotate(180deg);
 }
 
-/* Menu Dropdown */
+/* Nội dung Menu thả xuống */
 .dropdown-content {
-    display: none;
+    display: none; /* Mặc định ẩn */
     position: absolute;
     right: 0;
     top: 100%;
@@ -37,11 +87,12 @@
     margin-top: 10px;
 }
 
+/* Hiển thị khi Click (Kích hoạt class .active từ JavaScript) */
 .user-dropdown.active .dropdown-content {
     display: block !important;
 }
 
-/* Mục bên trong */
+/* Các mục bên trong Menu (Hồ sơ, Tủ sách, Đăng xuất) */
 .dropdown-item, .logout-btn {
     color: #4a5568 !important;
     padding: 10px 20px;
@@ -57,13 +108,22 @@
     transition: 0.2s;
 }
 
+/* Hiệu ứng khi di chuột vào từng mục nội bộ */
 .dropdown-item:hover, .logout-btn:hover {
     background-color: #f7fafc;
     color: #2196f3 !important;
 }
 
+/* Nút đăng xuất có vạch ngăn cách */
 .logout-btn {
     color: #e53e3e !important;
-    border-top: 1px solid #eee !important; /* Vạch kẻ ngăn cách nút đăng xuất */
+    border-top: 1px solid #eee !important;
     margin-top: 5px;
+}
+
+/* BỐ CỤC CHUNG (CONTAINER) */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
 }
