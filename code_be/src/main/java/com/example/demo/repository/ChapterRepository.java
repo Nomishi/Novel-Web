@@ -10,6 +10,9 @@ import java.util.Optional;
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     List<Chapter> findByStoryIdOrderByChapterNumberAsc(Long storyId);
+
+    Optional<Chapter> findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(Long storyId, Double chapterNumber);
+    Optional<Chapter> findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(Long storyId, Double chapterNumber);
     Optional<Chapter> findByStoryIdAndChapterNumber(Long storyId, Double chapterNumber);
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.story.id = :storyId")

@@ -166,9 +166,13 @@
                 Text content goes here... Use utext to render HTML if the text includes formatting.
             </div>
             <div class="reader-controls">
-                <button class="btn btn-primary" disabled>← Previous</button>
-                <a th:href="@{/story/{slug}(slug=${story.slug})}" class="btn">List</a>
-                <button class="btn btn-primary">Next →</button>
+                <a th:if="${prevChapterId != null}" th:href="@{/reader/{id}(id=${prevChapterId})}" class="btn">← Previous</a>
+                <button th:if="${prevChapterId == null}" class="btn" disabled>← Previous</button>
+
+                <a th:href="@{/story/{slug}(slug=${story.slug})}" class="btn">Mục lục</a>
+
+                <a th:if="${nextChapterId != null}" th:href="@{/reader/{id}(id=${nextChapterId})}" class="btn">Next →</a>
+                <button th:if="${nextChapterId == null}" class="btn" disabled>Next →</button>
             </div>
         </div>
     </div>

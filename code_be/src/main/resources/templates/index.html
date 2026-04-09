@@ -159,7 +159,11 @@
                     <h3>📖 Lịch sử đọc</h3>
                     <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.</div>
                     <div th:each="hist : ${readingHistory}" style="margin-bottom: 8px; font-size: 14px;">
-                        <a th:href="@{/read/{id}(id=${hist.currentChapter.id})}" th:text="${hist.story.title}" style="color: #2b6cb0; text-decoration: none;"></a>
+                        <a th:href="@{/read/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
+                            <span th:text="${hist.story.title}"></span>
+                            - Chương
+                            <span th:text="${hist.currentChapter.chapterNumber}"></span>
+                        </a>
                     </div>
                 </div>
                 <div class="card" style="margin-bottom: 0;">

@@ -24,6 +24,11 @@ public class ReaderController {
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Chapter chapter = chapterService.getChapterById(chapterId);
+            Long nextId = chapterService.getNextChapterId(chapter.getStory().getId(), chapter.getChapterNumber());
+            Long prevId = chapterService.getPrevChapterId(chapter.getStory().getId(), chapter.getChapterNumber());
+
+            model.addAttribute("nextChapterId", nextId);
+            model.addAttribute("prevChapterId", prevId);
             model.addAttribute("chapter", chapter);
             model.addAttribute("story", chapter.getStory());
             if (userDetails != null) {

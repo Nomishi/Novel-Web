@@ -12,6 +12,17 @@ public class ChapterService {
     public List<Chapter> getChaptersByStoryId(Long storyId) {
         return chapterRepository.findByStoryIdOrderByChapterNumberAsc(storyId);
     }
+
+    public Long getNextChapterId(Long storyId, Double currentNum) {
+        return chapterRepository.findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(storyId, currentNum)
+                .map(Chapter::getId).orElse(null);
+    }
+
+    public Long getPrevChapterId(Long storyId, Double currentNum) {
+        return chapterRepository.findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(storyId, currentNum)
+                .map(Chapter::getId).orElse(null);
+    }
+
     public Chapter getChapterById(Long id) {
         return chapterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chapter not found"));
