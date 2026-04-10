@@ -33,10 +33,12 @@ public class AuthController {
             return "redirect:/login?mode=register";
         }
     }
+
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm() {
         return "auth/forgot-password";
     }
+
     @PostMapping("/forgot-password")
     public String processForgotPassword(@RequestParam String email, RedirectAttributes redirectAttributes) {
         authService.processForgotPassword(email);

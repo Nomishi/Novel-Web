@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookshelf - WebDocTruyen</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=26)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         .tabs {
             display: flex;
@@ -94,6 +96,23 @@
             document.getElementById(id).style.display = 'block';
             event.target.classList.add('active');
         }
+
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Đóng menu khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && dropdown.classList.contains('active')) {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            }
+            document.getElementById('userContextMenu').style.display = 'none';
+        });
     </script>
 </body>
 </html>

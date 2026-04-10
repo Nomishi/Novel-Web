@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ sơ của tôi - WebDocTruyen</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -202,37 +202,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container nav-content">
-            <a th:href="@{/}" class="logo logo-special">
-                WebDocTruyen
-            </a>
-            <div class="nav-links flex items-center gap-4">
-                <a th:href="@{/}">Trang chủ</a>
-                <a th:href="@{/stories}">Thế giới / Tất cả</a>
-                <a th:href="@{/stories}">Tìm Truyện</a>
-                <th:block sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/admin/scraper}" class="btn" style="color: #e53e3e; font-weight: bold;">
-                        <i class="fas fa-spider"></i> Tool Quét Dữ Liệu
-                    </a>
-                </th:block>
-                <div class="user-dropdown">
-                    <span style="color:#2d3748; font-weight: 600; padding: 0.5rem;" th:text="${username}"></span>
-                    <div class="dropdown-content">
-                        <a th:href="@{/profile}" class="dropdown-item"><i class="fas fa-user-circle"></i> Hồ sơ của
-                            tôi</a>
-                        <a th:href="@{/}" class="dropdown-item"><i class="fas fa-bookmark"></i> Tủ sách</a>
-                        <div class="dropdown-divider"></div>
-                        <form th:action="@{/logout}" method="post" style="margin: 0;">
-                            <button type="submit" class="btn-logout-dropdown">
-                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
     <div class="decoration-circle dec-1"></div>
     <div class="decoration-circle dec-2"></div>
     <main class="profile-container">
@@ -280,5 +250,23 @@
             </div>
         </div>
     </main>
+    <script>
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Đóng menu khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && dropdown.classList.contains('active')) {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            }
+            document.getElementById('userContextMenu').style.display = 'none';
+        });
+    </script>
 </body>
 </html>

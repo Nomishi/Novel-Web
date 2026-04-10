@@ -1,32 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebDocTruyen - Read Stories Online</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=26)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(90deg, #00bcd4, #2196f3);
-            padding: 15px 40px;
-            color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar a, .navbar span {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .navbar a:hover { color: #ffeb3b; }
         .logo { font-weight: bold; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
         .menu { display: flex; gap: 25px; align-items: center; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
@@ -78,21 +60,6 @@
 
         .user-dropdown:hover .dropdown-content { display: none; }
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background: white;
-            min-width: 170px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            z-index: 100;
-            border-radius: 8px;
-            padding: 8px 0;
-            top: 100%;
-            margin-top: 10px;
-            border: 1px solid #e2e8f0;
-        }
-
         .user-dropdown.active .dropdown-content { display: block !important; }
 
         #userContextMenu {
@@ -121,32 +88,39 @@
 </head>
 <body>
 
-<nav class="navbar" th:fragment="common-navbar">
-    <a th:href="@{/}" class="logo">🚀 WebDocTruyen</a>
+<nav th:fragment="common-navbar" class="navbar">
+    <div class="logo">
+        <a th:href="@{/}">🚀 WEBDOCTRUYEN</a>
+    </div>
+
     <div class="menu">
         <a th:href="@{/}">🏠 Trang chủ</a>
         <a th:href="@{/stories}">📚 Tất cả truyện</a>
 
-        <th:block th:if="${username == null}">
-            <a th:href="@{/login}">🔑 Đăng nhập</a>
-        </th:block>
-
-        <th:block th:if="${username != null}">
-            <th:block th:if="${isAdmin != null and isAdmin}">
-                <a th:href="@{/admin/scraper}" style="color: #ffeb3b;">🛠 Quản trị</a>
+        <th:block sec:authorize="isAuthenticated()">
+            <th:block sec:authorize="hasAnyRole('ADMIN', 'ROLE_ADMIN')">
+                <a th:href="@{/admin/scraper}" style="color: #ffeb3b !important; font-weight: bold; margin-right: 15px;">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Quản trị
+                </a>
             </th:block>
+
             <div class="user-dropdown" id="userDropdown">
                 <span class="user-name-trigger" onclick="toggleUserMenu(event)">
-                    👤 <span th:text="${username}"></span>
+                    👤 <span sec:authentication="name"></span>
                 </span>
                 <div class="dropdown-content">
-                    <a th:href="@{/profile}" style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">Hồ sơ</a>
-                    <a th:href="@{/user/bookshelf}" style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">Tủ sách</a>
-                    <form th:action="@{/logout}" method="post" style="border-top: 1px solid #eee; margin-top: 5px;">
-                        <button type="submit" style="background: none; border: none; padding: 10px 20px; color: #e53e3e; cursor: pointer; font-family: inherit; width: 100%; text-align: left;">Đăng xuất</button>
+                    <a th:href="@{/profile}" class="dropdown-item">👤 Hồ sơ</a>
+                    <a th:href="@{/user/bookshelf}" class="dropdown-item">📖 Tủ sách</a>
+
+                    <form th:action="@{/logout}" method="post" style="display: block; border-top: 1px solid #eee; margin-top: 5px;">
+                        <button type="submit" class="logout-btn">🚪 Đăng xuất</button>
                     </form>
                 </div>
             </div>
+        </th:block>
+
+        <th:block sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">🔑 Đăng nhập</a>
         </th:block>
     </div>
 </nav>
