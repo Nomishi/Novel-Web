@@ -49,7 +49,7 @@
 
         .story-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.45);
         }
 
         .story-cover { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
@@ -133,7 +133,7 @@
                     <h3>📖 Lịch sử đọc</h3>
                     <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.</div>
                     <div th:each="hist : ${readingHistory}" style="margin-bottom: 8px; font-size: 14px;">
-                        <a th:href="@{/read/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
+                        <a th:href="@{/reader/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
                             <span th:text="${hist.story.title}"></span>
                             - Chương
                             <span th:text="${hist.currentChapter.chapterNumber}"></span>
