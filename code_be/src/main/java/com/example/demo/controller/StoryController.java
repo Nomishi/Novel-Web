@@ -23,7 +23,7 @@ public class StoryController {
     public String listStories(
             @RequestParam(required = false) String keyword,
             Model model, 
-            @PageableDefault(size = 16, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 18, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Specification<Story> spec = null;
         if (keyword != null && !keyword.trim().isEmpty()) {

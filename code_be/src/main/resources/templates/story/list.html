@@ -8,20 +8,42 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
         }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            border-left: 4px solid #00bcd4;
+            padding-left: 12px;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .story-card {
-            transition: transform 0.2s;
-            cursor: pointer;
-            overflow: hidden;
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 10px;
+            transition: 0.3s;
+            text-align: center;
+            border: 1px solid #eee;
+            text-decoration: none;
+            color: inherit;
         }
+
         .story-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.45);
         }
+
+        .story-cover { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .story-card h4 { font-size: 0.95rem; margin: 5px 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .story-cover {
             width: 100%;
             height: 280px;
@@ -89,6 +111,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
     <div class="container" style="padding: 2rem 1rem;">
@@ -107,21 +130,23 @@
             <h3>No stories found</h3>
             <p>Check back later or try adjusting your search filters.</p>
         </div>
-        <div class="grid" th:unless="${#lists.isEmpty(stories)}">
-            <a th:each="story : ${stories}" th:href="@{/story/{slug}(slug=${story.slug})}" class="card story-card"
-                style="padding: 0;">
-                <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-cover" alt="Cover">
-                <div th:unless="${story.coverImage}" class="story-cover flex items-center justify-center">
-                    <span style="color: #94a3b8;">No Cover</span>
-                </div>
-                <div class="story-info">
-                    <div class="story-title" th:text="${story.title}">Story Title</div>
-                    <div class="story-meta flex justify-between">
-                        <span th:text="${story.author}">Author</span>
-                        <span th:text="${story.status}">Status</span>
+        <div class="card" th:unless="${#lists.isEmpty(stories)}">
+            <div class="grid" th:unless="${#lists.isEmpty(stories)}">
+                <a th:each="story : ${stories}" th:href="@{/story/{slug}(slug=${story.slug})}" class="card story-card"
+                    style="padding: 0;">
+                    <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-cover" alt="Cover">
+                    <div th:unless="${story.coverImage}" class="story-cover flex items-center justify-center">
+                        <span style="color: #94a3b8;">No Cover</span>
                     </div>
-                </div>
-            </a>
+                    <div class="story-info">
+                        <div class="story-title" th:text="${story.title}">Story Title</div>
+                        <div class="story-meta flex justify-between">
+                            <span th:text="${story.author}">Author</span>
+                            <span th:text="${story.status}">Status</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
         
         <!-- Pagination block -->
@@ -129,9 +154,18 @@
             <a th:if="${page.hasPrevious()}" 
                th:href="@{/stories(keyword=${keyword}, page=${page.number - 1})}" 
                class="btn" style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-color);">Trước</a>
-            
-            <span style="padding: 0.5rem 1rem; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; font-weight: 500;">
-                Trang <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">10</span>
+
+            <span style="padding: 0.5rem 1rem; background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 4px; font-weight: 500; display: flex; align-items: center; gap: 5px;">Trang
+                <input type="number"
+                    th:value="${page.number + 1}"
+                    th:max="${page.totalPages}"
+                    min="1"
+                    onkeydown="if(event.key==='Enter') jumpToPage(this)"
+                    style="width: 45px; text-align: center; border: 1px solid transparent; background: transparent; font-weight: bold; cursor: pointer; outline: none;"
+                    onfocus="this.style.border='1px solid #3b82f6'; this.style.background='#fff';"
+                    onblur="this.style.border='1px solid transparent'; this.style.background='transparent';">
+                    / <span th:text="${page.totalPages}">10</span>
             </span>
             
             <a th:if="${page.hasNext()}" 
@@ -142,6 +176,7 @@
             Tổng cộng: <span th:text="${page.totalElements}">0</span> truyện
         </div>
     </div>
+
 <script>
     function toggleUserMenu(event) {
         event.stopPropagation();
@@ -159,6 +194,20 @@
         }
         document.getElementById('userContextMenu').style.display = 'none';
     });
+
+    function jumpToPage(input) {
+        const pageNum = parseInt(input.value);
+        const maxPage = parseInt(input.getAttribute('max'));
+
+        if (pageNum >= 1 && pageNum <= maxPage) {
+            // Chuyển hướng đến trang tương ứng (Spring Boot nhận trang từ 0 nên phải trừ 1)
+            const keyword = '[[${keyword != null ? keyword : ""}]]';
+            window.location.href = `/stories?page=${pageNum - 1}&keyword=${encodeURIComponent(keyword)}`;
+        } else {
+            alert("Vui lòng nhập trang từ 1 đến " + maxPage);
+            input.value = input.getAttribute('value'); // Reset về số trang cũ
+        }
+    }
 </script>
 </body>
 </html>
