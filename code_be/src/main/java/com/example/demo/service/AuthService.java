@@ -28,14 +28,16 @@ public class AuthService {
                 .displayName(username)
                 .readingTimeSeconds(0L)
                 .build();
-        Role userRole = roleRepository.findByName("ROLE_MEMBER")
-                .orElseGet(() -> {
-                    Role newRole = new Role(null, "ROLE_MEMBER");
-                    return roleRepository.save(newRole);
-                });
-        user.getRoles().add(userRole);
+        Role memberRole = roleRepository.findByName("ROLE_MEMBER")
+                .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_MEMBER")));
+        user.getRoles().add(memberRole);
+        //CẤP TỰ ĐỘNG ROLE_UPLOADER
+        Role uploaderRole = roleRepository.findByName("ROLE_UPLOADER")
+                .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_UPLOADER")));
+        user.getRoles().add(uploaderRole);
         return userRepository.save(user);
     }
+
     public void processForgotPassword(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {

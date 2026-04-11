@@ -6,6 +6,7 @@ import com.example.demo.repository.BookshelfRepository;
 import com.example.demo.repository.ReadingProgressRepository;
 import com.example.demo.repository.StoryRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.StoryUploaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,11 +22,14 @@ public class BookshelfController {
     private final ReadingProgressRepository progressRepository;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
+    private final StoryUploaderService storyUploaderService;
+
     @GetMapping("/user/bookshelf")
     public String showBookshelf(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         model.addAttribute("bookshelf", bookshelfRepository.findByUserIdOrderByAddedAtDesc(user.getId()));
         model.addAttribute("progressList", progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId()));
+        model.addAttribute("myStories", storyUploaderService.getStoriesByUploader(user));
         return "user/bookshelf";
     }
     @PostMapping("/bookshelf/add")

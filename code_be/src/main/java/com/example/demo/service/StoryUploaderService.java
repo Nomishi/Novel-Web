@@ -19,15 +19,12 @@ public class StoryUploaderService {
     private final ChapterRepository chapterRepository;
 
     public List<Story> getStoriesByUploader(User user) {
-        // Bạn cần thêm phương thức findByUploaderId trong StoryRepository nếu chưa có
-        return storyRepository.findAll().stream()
-                .filter(s -> s.getUploader() != null && s.getUploader().getId().equals(user.getId()))
-                .toList();
+        return storyRepository.findByUploader(user);
     }
-    
+
     public boolean isOwner(Long storyId, User user) {
         Story story = storyRepository.findById(storyId).orElse(null);
-        return story != null && story.getUploader() != null 
+        return story != null && story.getUploader() != null
                && story.getUploader().getId().equals(user.getId());
     }
     
@@ -66,6 +63,27 @@ public class StoryUploaderService {
                                 existingChapters.get(existingChapters.size() - 1).getChapterNumber() + 1.0;
             chapter.setChapterNumber(nextNumber);
         }
+        if (chapter.getType() == null) {
+            chapter.setType(Chapter.ChapterType.TEXT);
+        }
+
         return chapterRepository.save(chapter);
+    }
+
+    @Transactional
+    public Story updateStoryByOwner(Long storyId, Story updatedData, User user) {
+        if (!isOwner(storyId, user)) {
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa truyện này!");
+        }
+
+        Story existingStory = storyRepository.findById(storyId)
+                .orElseThrow(() -> new RuntimeException("Truyện không tồn tại"));
+        // Chỉ cập nhật các thông tin Uploader được phép sửa
+        existingStory.setTitle(updatedData.getTitle());
+        existingStory.setDescription(updatedData.getDescription());
+        existingStory.setStatus(updatedData.getStatus());
+        existingStory.setCoverImage(updatedData.getCoverImage());
+
+        return storyRepository.save(existingStory);
     }
 }

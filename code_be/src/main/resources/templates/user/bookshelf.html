@@ -123,7 +123,7 @@
         <div class="tabs">
             <div class="tab active" onclick="showTab('recent')">Recently Read</div>
             <div class="tab" onclick="showTab('followed')">Followed Stories</div>
-            <div class="tab" onclick="showTab('uploaded')">My Uploaded Stories</div>
+            <div class="tab" onclick="showTab('uploaded')">My Stories</div>
         </div>
         <div id="recent" class="tab-content">
             <div th:if="${#lists.isEmpty(progressList)}" class="card text-center text-muted">No recently read stories.
@@ -166,6 +166,47 @@
             </div>
         </div>
 
+        <div id="uploaded" class="tab-content" style="display: none;">
+            <div style="text-align: right; margin-bottom: 2rem;">
+                <a th:href="@{/uploader/stories/upload-story}" class="btn-continue btn-add-story">
+                    <i class="fa-solid fa-plus"></i> Post New Story
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(myStories)}" class="card text-center text-muted" style="padding: 3rem;">
+                <i class="fa-solid fa-book-open" style="font-size: 3rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                <p>You haven't posted any stories yet.</p>
+            </div>
+
+            <div th:each="story : ${myStories}" class="list-item">
+                <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="list-img" alt="Cover">
+                <div th:unless="${story.coverImage}"
+                     class="list-img flex items-center justify-center text-center text-sm text-muted"
+                     style="background: #f7fafc; border: 1px dashed #cbd5e0;">No Cover</div>
+
+                <div class="flex-col" style="flex-grow: 1;">
+                    <a th:href="@{/story/{slug}(slug=${story.slug})}" class="story-title"
+                       style="font-size: 1.25rem;" th:text="${story.title}">Story Title</a>
+
+                    <div style="margin-top: 0.5rem;">
+                        <span class="status-tag" th:text="${story.status}">Status</span>
+                        <span style="font-size: 0.875rem; color: #718096; margin-left: 10px;">
+                    <i class="fa-solid fa-eye"></i> <span th:text="${story.views}">0</span> views
+                </span>
+                    </div>
+                </div>
+
+                <div class="action" style="display: flex; gap: 10px;">
+                    <a th:href="@{/uploader/stories/edit/{id}(id=${story.id})}" class="btn-continue" style="background-color: #718096;">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                    <a th:href="@{/uploader/chapters/manage/{id}(id=${story.id})}" class="btn-continue">
+                        <i class="fa-solid fa-list"></i> Chapters
+                    </a>
+                </div>
+
+            </div>
+        </div>
 
     </div>
     <script>
