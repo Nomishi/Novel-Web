@@ -24,23 +24,95 @@
             color: var(--primary-color);
             font-weight: 600;
         }
+        .tab-content {
+            max-width: 50vw; /* Chiều dài bằng nửa Viewport (50%) */
+            margin: 0 auto;  /* Căn giữa toàn bộ danh sách */
+        }
+
+        /* Tùy chỉnh lại List Item để giống phong cách Card */
         .list-item {
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            padding: 1rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+            padding: 1.25rem; /* Tăng khoảng trắng bên trong */
+            background: white; /* Luôn là nền trắng để nổi trên nền xám */
+            border: 1px solid #eee;
+            border-radius: 12px; /* Bo góc giống index/list */
+            margin-bottom: 1.5rem; /* Khoảng cách giữa các hàng */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Đổ bóng nhẹ */
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
+
+        /* Hiệu ứng nổi lên khi di chuột vào */
+        .list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: #00bcd4;
+        }
+
         .list-img {
-            width: 80px;
-            height: 120px;
+            width: 90px;
+            height: 130px;
             object-fit: cover;
-            border-radius: 0.25rem;
+            border-radius: 8px; /* Bo góc ảnh bìa */
             flex-shrink: 0;
-            background: var(--border-color);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .story-title {
+            color: #2d3748;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .story-title:hover {
+            color: #00bcd4;
+        }
+
+        /* Trạng thái và các tag */
+        .status-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #e0f7fa;
+            color: #00bcd4;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .btn-continue {
+            display: inline-block;
+            background-color: #00bcd4; /* Màu xanh đồng bộ với web */
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 20px; /* Bo tròn kiểu viên thuốc nhìn rất hiện đại */
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap; /* Đảm bảo không bao giờ xuống dòng */
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-continue:hover {
+            background-color: #00acc1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .action {
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        /* Màu xanh lá cho nút thêm truyện */
+        .btn-add-story {
+            background-color: #10b981;
+        }
+        .btn-add-story:hover {
+            background-color: #059669;
         }
     </style>
 </head>
@@ -51,6 +123,7 @@
         <div class="tabs">
             <div class="tab active" onclick="showTab('recent')">Recently Read</div>
             <div class="tab" onclick="showTab('followed')">Followed Stories</div>
+            <div class="tab" onclick="showTab('uploaded')">My Uploaded Stories</div>
         </div>
         <div id="recent" class="tab-content">
             <div th:if="${#lists.isEmpty(progressList)}" class="card text-center text-muted">No recently read stories.
@@ -60,18 +133,22 @@
                 <div th:unless="${prog.story.coverImage}"
                     class="list-img flex items-center justify-center text-center text-sm text-muted">No Cover</div>
                 <div class="flex-col" style="flex-grow: 1;">
-                    <a th:href="@{/story/{slug}(slug=${prog.story.slug})}" class="story-title"
+                    <a th:href="@{/reader/{id}(id=${prog.currentChapter.id})}" class="story-title"
                         style="font-size: 1.25rem;" th:text="${prog.story.title}">Story Title</a>
                     <div style="font-size: 0.875rem; color: var(--text-color); opacity: 0.8; margin-top: 0.25rem;"
                         th:text="'Last Read: Chapter ' + (${prog.currentChapter != null ? prog.currentChapter.chapterNumber : '?'}) + ' - ' + ${prog.scrollPercentage} + '%'">
                         Last Read...</div>
                 </div>
-                <div class="action flex gap-2">
-                    <a th:if="${prog.currentChapter != null}" th:href="@{/reader/{id}(id=${prog.currentChapter.id})}"
-                        class="btn btn-primary">Continue Reading</a>
+                <div class="action">
+                    <a th:if="${prog.currentChapter != null}"
+                       th:href="@{/reader/{id}(id=${prog.currentChapter.id})}"
+                       class="btn-continue">
+                        Continue
+                    </a>
                 </div>
             </div>
         </div>
+
         <div id="followed" class="tab-content" style="display: none;">
             <div th:if="${#lists.isEmpty(bookshelf)}" class="card text-center text-muted">No followed stories.</div>
             <div th:each="item : ${bookshelf}" class="list-item">
@@ -88,6 +165,8 @@
                 </div>
             </div>
         </div>
+
+
     </div>
     <script>
         function showTab(id) {

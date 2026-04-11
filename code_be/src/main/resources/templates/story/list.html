@@ -132,8 +132,7 @@
         </div>
         <div class="card" th:unless="${#lists.isEmpty(stories)}">
             <div class="grid" th:unless="${#lists.isEmpty(stories)}">
-                <a th:each="story : ${stories}" th:href="@{/story/{slug}(slug=${story.slug})}" class="card story-card"
-                    style="padding: 0;">
+                <a th:each="story : ${stories}" th:href="@{/story/{slug}(slug=${story.slug})}" class="story-card">
                     <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-cover" alt="Cover">
                     <div th:unless="${story.coverImage}" class="story-cover flex items-center justify-center">
                         <span style="color: #94a3b8;">No Cover</span>
@@ -141,8 +140,10 @@
                     <div class="story-info">
                         <div class="story-title" th:text="${story.title}">Story Title</div>
                         <div class="story-meta flex justify-between">
-                            <span th:text="${story.author}">Author</span>
-                            <span th:text="${story.status}">Status</span>
+                            <div class="author-name" th:text="${story.author}" style="margin-bottom: 4px;">Author</div>
+                            <div class="status-tag" th:text="${story.status}" style="text-transform: uppercase;">
+                                Status
+                            </div>
                         </div>
                     </div>
                 </a>
