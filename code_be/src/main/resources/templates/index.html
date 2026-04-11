@@ -128,23 +128,18 @@
 <div class="container">
     <div class="home-layout">
         <div class="main-column">
-            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 25px;">
+            <div style="margin-bottom: 25px;">
                 <div class="card" style="margin-bottom: 0;">
                     <h3>📖 Lịch sử đọc</h3>
                     <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.</div>
-                    <div th:each="hist : ${readingHistory}" style="margin-bottom: 8px; font-size: 14px;">
+                    <div th:each="hist, i : ${readingHistory}"
+                         th:if="${i.index < 6}"
+                         style="margin-bottom: 8px; font-size: 14px;">
                         <a th:href="@{/reader/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
                             <span th:text="${hist.story.title}"></span>
                             - Chương
                             <span th:text="${hist.currentChapter.chapterNumber}"></span>
                         </a>
-                    </div>
-                </div>
-                <div class="card" style="margin-bottom: 0;">
-                    <h3>🌐 Dịch Trung -> Việt</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <textarea id="sourceText" placeholder="Dán văn bản..." style="flex:1; height: 80px; border-radius: 8px; border: 1px solid #ddd; padding: 8px;"></textarea>
-                        <textarea id="translatedText" readonly style="flex:1; height: 80px; border-radius: 8px; border: 1px solid #ddd; background: #f7fafc; padding: 8px;"></textarea>
                     </div>
                 </div>
             </div>
@@ -216,17 +211,6 @@
         }
         document.getElementById('userContextMenu').style.display = 'none';
     });
-
-    // Logic Dịch thuật
-    const sourceText = document.getElementById('sourceText');
-    sourceText?.addEventListener('input', debounce(() => {
-        const text = sourceText.value;
-        if (text.trim()) {
-            fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=vi&dt=t&q=${encodeURIComponent(text)}`)
-                .then(res => res.json())
-                .then(data => { document.getElementById('translatedText').value = data[0].map(x => x[0]).join(''); });
-        }
-    }, 500));
 
     function debounce(func, wait) {
         let timeout;
