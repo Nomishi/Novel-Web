@@ -59,26 +59,33 @@
             padding-top: 1.5rem;
             border-top: 1px solid var(--border-color);
         }
-
-        /* Fixed top bar for reading controls */
+        
+        /* Thanh Topbar luôn xuất hiện cố định ở trên cùng */
         .reader-topbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
+            height: 60px; /* Độ cao cố định */
+            background: #00bcd4; /* Màu xanh Cyan giống index */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-            transform: translateY(-100%);
-            transition: transform 0.3s;
+            padding: 0 1.5rem;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            color: white;
+            transform: none;
         }
 
-        body.scrolled-up .reader-topbar {
-            transform: translateY(0);
+        /* Đảm bảo các thành phần bên trong Topbar có màu trắng */
+        .reader-topbar a, .reader-topbar span {
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            margin-top: 80px; /* 60px của thanh + 20px khoảng cách đệm */
         }
 
         .toast-notification {
