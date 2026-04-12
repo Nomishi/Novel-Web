@@ -466,13 +466,9 @@
                     <div class="top-3">
                         <div th:each="u, iterStat : ${topReaders}" th:if="${iterStat.index < 3}" 
                         th:class="'top-item ' + (${iterStat.index == 0} ? 'top-1' : (${iterStat.index == 1} ? 'top-2' : 'top-3-item'))">
-
                             <div class="avatar" th:text="${#strings.substring(u.username,0,1).toUpperCase()}"></div>
-
                             <div class="rank" th:text="${iterStat.index + 1}">1</div>
-
                             <div class="name" th:text="${u.username}">Username</div>
-
                             <div class="score" th:text="${ 
                                     (u.readingTimeSeconds != null ? (u.readingTimeSeconds / 3600) : 0) + 'h ' +
                                     ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 3600 / 60) : 0)) + 'm ' +
@@ -485,16 +481,12 @@
                     <!-- TOP 4+ -->
                     <div class="ranking-list">
                         <div th:each="u, iterStat : ${topReaders}" th:if="${iterStat.index >= 3}" class="rank-item">
-
                             <div class="left">
                                 <span class="rank-number" th:text="${iterStat.index + 1}">4</span>
-
                                 <div class="avatar small" th:text="${#strings.substring(u.username,0,1).toUpperCase()}">
                                 </div>
-
                                 <span class="username" th:text="${u.username}">User</span>
                             </div>
-
                            <div class="time" th:text="${ 
                                     (u.readingTimeSeconds != null ? (u.readingTimeSeconds / 3600) : 0) + 'h ' +
                                     ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 3600 / 60) : 0)) + 'm ' +
@@ -502,7 +494,6 @@
                                     }">10h 23m 45s
                             </div>
                         </div>
-
                         <div th:if="${#lists.isEmpty(topReaders)}" class="empty">
                             Chưa có dữ liệu.
                         </div>
