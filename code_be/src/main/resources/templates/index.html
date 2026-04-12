@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org">
 
-=======
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebDocTruyen - Read Stories Online</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=26)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-<<<<<<< HEAD
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -61,12 +55,6 @@
             grid-template-columns: 1fr 320px;
             gap: 25px;
         }
-=======
-        .logo { font-weight: bold; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
-        .menu { display: flex; gap: 25px; align-items: center; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .home-layout { display: grid; grid-template-columns: 1fr 320px; gap: 25px; }
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 
         @media (max-width: 992px) {
             .home-layout {
@@ -110,11 +98,7 @@
 
         .story-card:hover {
             transform: translateY(-5px);
-<<<<<<< HEAD
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-=======
-            box-shadow: 0 8px 15px rgba(0,0,0,0.45);
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
         }
 
         .story-cover {
@@ -154,7 +138,6 @@
             display: none;
         }
 
-<<<<<<< HEAD
         .dropdown-content {
             display: none;
             position: absolute;
@@ -173,9 +156,6 @@
         .user-dropdown.active .dropdown-content {
             display: block !important;
         }
-=======
-        .user-dropdown.active .dropdown-content { display: block !important; }
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 
         #userContextMenu {
             display: none;
@@ -204,19 +184,21 @@
         /* CARD tổng */
         .ranking-card {
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.6);
             border-radius: 16px;
-            padding: 15px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
         }
 
         /* ===== TOP 3 ===== */
         .top-3 {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            /* FIX lệch */
             align-items: flex-end;
-            margin-top: 20px;
+            gap: 25px;
+            /* thêm cái này */
+            margin-top: 40px;
         }
 
         .top-item {
@@ -239,6 +221,18 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
 
+        .top-1 {
+            transform: translateY(-10px) scale(1.1);
+        }
+
+        .top-2 {
+            transform: translateY(10px);
+        }
+
+        .top-3-item {
+            transform: translateY(15px);
+        }
+
         /* Top 1 to hơn + nổi hơn */
         .top-1 .avatar {
             width: 75px;
@@ -250,7 +244,7 @@
         /* Số thứ hạng */
         .top-item .rank {
             position: absolute;
-            bottom: -8px;
+            bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
             background: #3b82f6;
@@ -268,7 +262,7 @@
 
         /* Tên + điểm */
         .top-item .name {
-            margin-top: 10px;
+            margin-top: 18px;
             font-weight: 600;
             font-size: 14px;
         }
@@ -280,7 +274,7 @@
 
         /* ===== LIST ===== */
         .ranking-list {
-            margin-top: 20px;
+            margin-top: 53px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -358,7 +352,6 @@
 
 <body>
 
-<<<<<<< HEAD
     <nav class="navbar" th:fragment="common-navbar">
         <a th:href="@{/}" class="logo">🚀 WebDocTruyen</a>
         <div class="menu">
@@ -386,8 +379,9 @@
                             sách</a>
                         <form th:action="@{/logout}" method="post" style="border-top: 1px solid #eee; margin-top: 5px;">
                             <button type="submit"
-                                style="background: none; border: none; padding: 10px 20px; color: #e53e3e; cursor: pointer; font-family: inherit; width: 100%; text-align: left;">Đăng
-                                xuất</button>
+                                style="background: none; border: none; padding: 10px 20px; color: #e53e3e; cursor: pointer; font-family: inherit; width: 100%; text-align: left;"> 
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -448,62 +442,6 @@
                         </a>
                     </div>
                 </div>
-=======
-<nav th:fragment="common-navbar" class="navbar">
-    <div class="logo">
-        <a th:href="@{/}">🚀 WEBDOCTRUYEN</a>
-    </div>
-
-    <div class="menu">
-        <a th:href="@{/}">🏠 Trang chủ</a>
-        <a th:href="@{/stories}">📚 Tất cả truyện</a>
-
-        <th:block sec:authorize="isAuthenticated()">
-            <th:block sec:authorize="hasAnyRole('ADMIN', 'ROLE_ADMIN')">
-                <a th:href="@{/admin/scraper}" style="color: #ffeb3b !important; font-weight: bold; margin-right: 15px;">
-                    <i class="fa-solid fa-screwdriver-wrench"></i> Quản trị
-                </a>
-            </th:block>
-
-            <div class="user-dropdown" id="userDropdown">
-                <span class="user-name-trigger" onclick="toggleUserMenu(event)">
-                    👤 <span sec:authentication="name"></span>
-                </span>
-                <div class="dropdown-content">
-                    <a th:href="@{/profile}" class="dropdown-item">👤 Hồ sơ</a>
-                    <a th:href="@{/user/bookshelf}" class="dropdown-item">📖 Tủ sách</a>
-
-                    <form th:action="@{/logout}" method="post" style="display: block; border-top: 1px solid #eee; margin-top: 5px;">
-                        <button type="submit" class="logout-btn">🚪 Đăng xuất</button>
-                    </form>
-                </div>
-            </div>
-        </th:block>
-
-        <th:block sec:authorize="isAnonymous()">
-            <a th:href="@{/login}">🔑 Đăng nhập</a>
-        </th:block>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="home-layout">
-        <div class="main-column">
-            <div style="margin-bottom: 25px;">
-                <div class="card" style="margin-bottom: 0;">
-                    <h3>📖 Lịch sử đọc</h3>
-                    <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.</div>
-                    <div th:each="hist, i : ${readingHistory}"
-                         th:if="${i.index < 6}"
-                         style="margin-bottom: 8px; font-size: 14px;">
-                        <a th:href="@{/reader/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
-                            <span th:text="${hist.story.title}"></span>
-                            - Chương
-                            <span th:text="${hist.currentChapter.chapterNumber}"></span>
-                        </a>
-                    </div>
-                </div>
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
             </div>
 
             <div class="sidebar-column">
@@ -532,13 +470,14 @@
                         🔑 Vui lòng đăng nhập để chat.
                     </div>
                 </div>
+
                 <div class="card ranking-card">
                     <h3>🏆 Bảng xếp hạng đọc</h3>
 
                     <!-- TOP 3 -->
                     <div class="top-3">
-                        <div th:each="u, iterStat : ${topReaders}" th:if="${iterStat.index < 3}"
-                            th:class="'top-item top-' + ${iterStat.index + 1}">
+                        <div th:each="u, iterStat : ${topReaders}" th:if="${iterStat.index < 3}" 
+                        th:class="'top-item ' + (${iterStat.index == 0} ? 'top-1' : (${iterStat.index == 1} ? 'top-2' : 'top-3-item'))">
 
                             <div class="avatar" th:text="${#strings.substring(u.username,0,1).toUpperCase()}"></div>
 
@@ -546,9 +485,11 @@
 
                             <div class="name" th:text="${u.username}">Username</div>
 
-                            <div class="score"
-                                th:text="${((u.readingTimeSeconds != null) ? u.readingTimeSeconds : 0) / 60} + ' phút'">
-                                1000 phút
+                            <div class="score" th:text="${ 
+                                    (u.readingTimeSeconds != null ? (u.readingTimeSeconds / 3600) : 0) + 'h ' +
+                                    ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 3600 / 60) : 0)) + 'm ' +
+                                    ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 60) : 0)) + 's'
+                                    }">10h 23m 45s
                             </div>
                         </div>
                     </div>
@@ -566,9 +507,11 @@
                                 <span class="username" th:text="${u.username}">User</span>
                             </div>
 
-                            <div class="time"
-                                th:text="${((u.readingTimeSeconds != null) ? u.readingTimeSeconds : 0) / 60} + ' phút'">
-                                800 phút
+                           <div class="time" th:text="${ 
+                                    (u.readingTimeSeconds != null ? (u.readingTimeSeconds / 3600) : 0) + 'h ' +
+                                    ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 3600 / 60) : 0)) + 'm ' +
+                                    ((u.readingTimeSeconds != null ? (u.readingTimeSeconds % 60) : 0)) + 's'
+                                    }">10h 23m 45s
                             </div>
                         </div>
 
@@ -615,7 +558,6 @@
             return () => { clearTimeout(timeout); timeout = setTimeout(func, wait); };
         }
 
-<<<<<<< HEAD
         function showUserContextMenu(event, username, userId) {
             event.preventDefault();
             const menu = document.getElementById('userContextMenu');
@@ -682,21 +624,6 @@
             }
         });
     </script>
-=======
-    function debounce(func, wait) {
-        let timeout;
-        return () => { clearTimeout(timeout); timeout = setTimeout(func, wait); };
-    }
-
-    function showUserContextMenu(event, username, userId) {
-        event.preventDefault();
-        const menu = document.getElementById('userContextMenu');
-        menu.style.display = 'block';
-        menu.style.left = event.pageX + 'px';
-        menu.style.top = event.pageY + 'px';
-    }
-</script>
->>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 </body>
 
 </html>
