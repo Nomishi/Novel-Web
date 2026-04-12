@@ -89,6 +89,4 @@ public class MyStoryController {
 
         return "redirect:/user/bookshelf";
     }
-
-    
 }

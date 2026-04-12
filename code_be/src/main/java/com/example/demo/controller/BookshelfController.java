@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.transaction.annotation.Transactional;
+
 @Controller
 @RequiredArgsConstructor
 public class BookshelfController {
@@ -32,6 +34,7 @@ public class BookshelfController {
         model.addAttribute("myStories", storyUploaderService.getStoriesByUploader(user));
         return "user/bookshelf";
     }
+
     @PostMapping("/bookshelf/add")
     public String addToBookshelf(@RequestParam Long storyId, @AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
@@ -40,6 +43,16 @@ public class BookshelfController {
         if (!exists) {
             bookshelfRepository.save(Bookshelf.builder().user(user).story(story).notifyOnNewChapter(true).build());
         }
+        return "redirect:/story/" + story.getSlug();
+    }
+
+    @PostMapping("/bookshelf/remove")
+    @Transactional
+    public String removeFromBookshelf(@RequestParam Long storyId, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        Story story = storyRepository.findById(storyId).orElseThrow();
+        bookshelfRepository.deleteByUserIdAndStoryId(user.getId(), story.getId());
+
         return "redirect:/story/" + story.getSlug();
     }
 }
