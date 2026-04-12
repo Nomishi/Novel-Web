@@ -181,7 +181,6 @@
         }
 
         /* Bảng xếp hạng */
-        /* CARD tổng */
         .ranking-card {
             margin-top: 20px;
             border-radius: 16px;
@@ -194,10 +193,8 @@
         .top-3 {
             display: flex;
             justify-content: center;
-            /* FIX lệch */
             align-items: flex-end;
             gap: 25px;
-            /* thêm cái này */
             margin-top: 40px;
         }
 
@@ -206,7 +203,6 @@
             position: relative;
         }
 
-        /* Avatar nổi + glow */
         .top-item .avatar {
             width: 60px;
             height: 60px;
@@ -233,7 +229,7 @@
             transform: translateY(15px);
         }
 
-        /* Top 1 to hơn + nổi hơn */
+        /* Top 1 */
         .top-1 .avatar {
             width: 75px;
             height: 75px;
@@ -260,7 +256,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
-        /* Tên + điểm */
         .top-item .name {
             margin-top: 18px;
             font-weight: 600;
@@ -280,7 +275,6 @@
             gap: 12px;
         }
 
-        /* Item dạng pill nổi */
         .rank-item {
             display: flex;
             justify-content: space-between;
@@ -297,13 +291,11 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* Hover nổi lên */
         .rank-item:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(59, 130, 246, 0.35);
         }
 
-        /* Bên trái */
         .rank-item .left {
             display: flex;
             align-items: center;
@@ -315,7 +307,6 @@
             font-weight: bold;
         }
 
-        /* Avatar nhỏ */
         .avatar.small {
             width: 30px;
             height: 30px;
@@ -330,18 +321,15 @@
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Username */
         .username {
             font-weight: 500;
         }
 
-        /* Thời gian */
         .time {
             font-weight: 600;
             color: #1d4ed8;
         }
 
-        /* Empty */
         .empty {
             text-align: center;
             color: #94a3b8;
@@ -569,7 +557,6 @@
         // Chat logic
         const chatForm = document.getElementById("chatForm");
         const chatContainer = document.getElementById("chatContainer");
-        // Scroll chat to bottom on load
         if (chatContainer) {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -581,7 +568,6 @@
                 if (!content.trim()) return;
                 const formData = new URLSearchParams();
                 formData.append("content", content);
-                // We do not have CSRF token on APIs as we configured ignoringMatchers
                 fetch('/api/chat/add', {
                     method: 'POST',
                     headers: {
@@ -591,7 +577,6 @@
                 }).then(res => {
                     if (res.ok) {
                         input.value = "";
-                        // Quick way to refresh: reload page
                         window.location.reload();
                     } else {
                         alert("Bạn bị từ chối gửi tin nhắn.");
@@ -599,30 +584,7 @@
                 }).catch(console.error);
             });
         }
-        // Context Menu logic
-        const contextMenu = document.getElementById('userContextMenu');
-        const btnStartPrivateChat = document.getElementById('btnStartPrivateChat');
-        window.showUserContextMenu = function (e, username, recipientId) {
-            // Prevent event bubbling so the window click listener doesn't immediately close it
-            e = e || window.event;
-            if (e) e.stopPropagation();
-            contextMenu.style.display = 'block';
-            // Adjust position so it doesn't go off-screen easily
-            const x = e ? e.pageX : 0;
-            const y = e ? e.pageY : 0;
-            contextMenu.style.left = x + 'px';
-            contextMenu.style.top = y + 'px';
-            btnStartPrivateChat.onclick = function () {
-                contextMenu.style.display = 'none';
-                openPrivateChat(username, recipientId);
-            };
-        };
-        // Close context menu if clicked outside
-        window.addEventListener('click', function () {
-            if (contextMenu.style.display === 'block') {
-                contextMenu.style.display = 'none';
-            }
-        });
+
     </script>
 </body>
 
