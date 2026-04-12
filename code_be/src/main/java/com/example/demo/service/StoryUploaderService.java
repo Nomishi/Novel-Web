@@ -86,4 +86,18 @@ public class StoryUploaderService {
 
         return storyRepository.save(existingStory);
     }
+
+    @Transactional
+    public void updateChapterByOwner(Long chapterId, Chapter newData, User user) {
+        Chapter chapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy chương"));
+
+        if (!chapter.getStory().getUploader().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền sửa chương của truyện này");
+        }
+
+        chapter.setChapterNumber(newData.getChapterNumber());
+        chapter.setTitle(newData.getTitle());
+        chapter.setContent(newData.getContent());
+    }
 }

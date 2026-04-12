@@ -3,12 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${isEdit} ? 'Edit Story' : 'Post New Story'">Post New Story</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=31)}">
+    <title>Thêm Chương Mới - WebDocTruyen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=35)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Tái sử dụng style từ story-form */
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 400px; /* Tăng chiều cao cho nội dung chương truyện */
+            line-height: 1.8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Nút Lưu xanh ngọc đồng bộ */
+        .btn-submit {
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            padding: 0.75rem 2.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+
+        /* Nút Hủy màu xám nhạt */
+        .btn-cancel {
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 0.75rem 2.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e2e8f0;
+        }
+
+        h2 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    </style>
 </head>
 
 <body>
+<nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
 
+<div class="form-container">
+    <h2>Đăng Chương Mới</h2>
+    <p style="text-align: center; color: #718096; margin-bottom: 2rem;">Thêm nội dung chương mới cho bộ truyện của bạn.</p>
+
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+    <div class="card">
+        <form th:action="${isEdit} ? @{/uploader/manage/stories/{sId}/chapters/edit/{cId}(sId=${storyId}, cId=${chapter.id})} : @{/uploader/manage/stories/{id}/chapters/save(id=${storyId})}"
+              th:object="${chapter}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}" th:if="${isEdit}">
+
+            <div class="form-group">
+                <label class="form-label">Số chương *</label>
+                <input type="number" step="0.1" th:field="*{chapterNumber}"
+                       class="form-control" placeholder="Ví dụ: 1, 1.5, 2" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tiêu đề chương</label>
+                <input type="text" th:field="*{title}"
+                       class="form-control" placeholder="Nhập tên chương (ví dụ: Khởi đầu mới)">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nội dung chương *</label>
+                <textarea th:field="*{content}" class="form-control"
+                          placeholder="Dán hoặc nhập nội dung chương truyện vào đây..." required></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-submit">Đăng Chương</button>
+                <a th:href="@{/uploader/manage/stories/{id}/chapters/manage(id=${storyId})}"
+                   class="btn-cancel">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Logic cho Navbar
+    function toggleUserMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        }
+    });
+</script>
 </body>
 </html>
