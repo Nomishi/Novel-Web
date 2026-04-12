@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'Edit Story' : 'Post New Story'">Post New Story</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=31)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Container và Card */
+        .form-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        /* Group và Label */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Input, Textarea, Select */
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box; /* Đảm bảo padding không làm tràn chiều rộng */
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-submit {
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+
+        .btn-cancel {
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e2e8f0;
+        }
+
+        h2 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
+    <div class="form-container">
+        <h2 th:text="${isEdit} ? 'Edit Story' : 'Post a New Story'">Post a New Story</h2>
+        <p style="text-align: center; color: #718096; margin-bottom: 2rem;">Fill in the details below to share your story.</p>
+
+        <div class="card">
+            <form th:action="${isEdit} ? @{/uploader/stories/edit/{id}(id=${story.id})} : @{/uploader/stories/upload-story}"
+                  th:object="${story}"
+                  method="post">
+
+                <input type="hidden" th:field="*{id}" th:if="${isEdit}">
+
+                <div class="form-group">
+                    <label class="form-label" for="title">Story Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control"
+                           placeholder="Enter title..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="author">Author</label>
+                    <input type="text" id="author" th:field="*{author}" class="form-control"
+                           placeholder="Author name..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="coverImage">Cover Image URL</label>
+                    <input type="text" id="coverImage" th:field="*{coverImage}" class="form-control"
+                           placeholder="https://example.com/cover.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" th:field="*{status}" class="form-control">
+                        <option value="ONGOING">Ongoing</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="PAUSED">Paused</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Description (Văn án)</label>
+                    <textarea id="description" th:field="*{description}" class="form-control"
+                              placeholder="Introduce your story..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-submit"
+                            th:text="${isEdit} ? 'Save Changes' : 'Publish Story'">Publish Story</button>
+                    <a th:href="@{/user/bookshelf}" class="btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    function toggleUserMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('active');
+    }
+
+    // Đóng menu khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        }
+        document.getElementById('userContextMenu').style.display = 'none';
+    });
+</script>
+</body>
+</html>

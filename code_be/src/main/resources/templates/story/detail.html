@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${story.title} + ' - WebDocTruyen'"></title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -193,16 +193,6 @@
             padding-left: 2.25rem;
             /* Slight indent animation */
         }
-
-        .fas, .fab, .far, .fa-solid, .fa-regular {
-            font-family: "Font Awesome 6 Free" !important;
-            font-weight: 900 !important;
-            display: inline-block;
-            font-style: normal;
-            font-variant: normal;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-        }
     </style>
 </head>
 
@@ -242,13 +232,24 @@
                    style="opacity: 0.5; pointer-events: none;">
                     <i class="fas fa-lock"></i> Chưa có chương
                 </a>
-                <form th:if="${#authorization.expression('isAuthenticated()')}" th:action="@{/bookshelf/add}"
-                      method="post">
+
+                <form th:if="${#authorization.expression('isAuthenticated()') and !isFollowed}"
+                      th:action="@{/bookshelf/add}" method="post">
                     <input type="hidden" name="storyId" th:value="${story.id}">
                     <button type="submit" class="btn-animated btn-outline">
                         <i class="fas fa-bookmark"></i> Thêm Vào Tủ Sách
                     </button>
                 </form>
+                <form th:if="${#authorization.expression('isAuthenticated()') and isFollowed}"
+                      th:action="@{/bookshelf/remove}" method="post">
+                    <input type="hidden" name="storyId" th:value="${story.id}">
+                    <button type="submit"
+                            class="btn-animated btn-outline"
+                            style="background:#dbeafe; color:#2563eb; border-color:#3b82f6;">
+                        <i class="fas fa-check"></i> Đã Thêm Vào Tủ
+                    </button>
+                </form>
+
                 <button th:if="${#authorization.expression('isAuthenticated()')}" type="button"
                         class="btn-animated btn-outline" onclick="nominateStory()"
                         style="color: #10b981; border-color: #10b981;">

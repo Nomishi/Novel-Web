@@ -12,7 +12,12 @@ public interface BookshelfRepository extends JpaRepository<Bookshelf, Long> {
     Optional<Bookshelf> findByUserIdAndStoryId(Long userId, Long storyId);
     List<Bookshelf> findByUserIdOrderByAddedAtDesc(Long userId);
     List<Bookshelf> findByStoryIdAndNotifyOnNewChapterTrue(Long storyId);
+
     @Modifying
     @Query("DELETE FROM Bookshelf b WHERE b.story.id = :storyId")
     void deleteByStoryId(@Param("storyId") Long storyId);
+
+    @Modifying
+    @Query("DELETE FROM Bookshelf b WHERE b.user.id = :userId AND b.story.id = :storyId")
+    void deleteByUserIdAndStoryId(@Param("userId") Long userId, @Param("storyId") Long storyId);
 }

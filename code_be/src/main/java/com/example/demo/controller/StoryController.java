@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 import com.example.demo.entity.Story;
+import com.example.demo.entity.User;
+import com.example.demo.repository.BookshelfRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ChapterService;
 import com.example.demo.service.StoryService;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +16,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
 public class StoryController {
     private final StoryService storyService;
     private final ChapterService chapterService;
+    private final BookshelfRepository bookshelfRepository;
+    private final UserRepository userRepository;
+
     @GetMapping("/stories")
     public String listStories(
             @RequestParam(required = false) String keyword,
             Model model, 
-            @PageableDefault(size = 16, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 18, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Specification<Story> spec = null;
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -47,10 +54,19 @@ public class StoryController {
         return "Total stories: " + storyService.getStories(null, org.springframework.data.domain.Pageable.unpaged()).getTotalElements();
     }
     @GetMapping("/story/{slug}")
-    public String viewStory(@PathVariable String slug, Model model) {
+    public String viewStory(@PathVariable String slug, Model model, Principal principal) {
         Story story = storyService.getStoryBySlug(slug);
         model.addAttribute("story", story);
         model.addAttribute("chapters", chapterService.getChaptersByStoryId(story.getId()));
+        boolean isFollowed = false;
+        if (principal != null) {
+            User user = userRepository.findByUsername(principal.getName()).orElse(null);
+            isFollowed = bookshelfRepository
+                    .findByUserIdAndStoryId(user.getId(), story.getId())
+                    .isPresent();
+        }
+        model.addAttribute("isFollowed", isFollowed);
+
         return "story/detail";
     }
 }

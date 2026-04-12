@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auth - WebDocTruyen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
@@ -116,21 +117,34 @@
         .container.right-panel-active .overlay-left { transform: translateX(0); }
         .overlay-right { right:0; transform: translateX(0); }
         .container.right-panel-active .overlay-right { transform: translateX(20%); }
-        .social-container { margin: 20px 0; }
-        .social-container a {
-            border: 1px solid #ddd;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 5px;
-            height: 40px;
-            width: 40px;
-            color: #555;
-        }
         .home-link { position: absolute; top: 20px; left: 20px; font-weight: bold; color: #63a6ff; text-decoration: none; z-index: 1000; }
         .alert { width: 100%; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; text-align: left; border-left: 4px solid #e53e3e; color: #b91c1c; background: #fee2e2; }
         .alert-success { color: #15803d; background: #dcfce3; border-color: #22c55e; }
+
+        /* Xóa bỏ đoạn .btn-forgot cũ và thay bằng đoạn này */
+        .btn-forgot {
+            color: #ff6b81 !important;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            margin: 10px 0 !important;
+            display: block !important;
+            position: relative !important;
+            z-index: 9999 !important; /* Đảm bảo nằm trên mọi lớp phủ */
+            cursor: pointer !important;
+            width: fit-content;
+        }
+
+        .btn-forgot:hover {
+            color: #3f8fff !important;
+            text-decoration: underline;
+        }
+
+        /* Đảm bảo form không đè lên các thành phần con */
+        .form-container form {
+            overflow: visible !important;
+        }
+
     </style>
 </head>
 <body>
@@ -139,11 +153,6 @@
         <div class="form-container sign-up-container">
             <form th:action="@{/register}" method="post">
                 <h1>Đăng Ký</h1>
-                <div class="social-container">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div>
                 <span>Sử dụng email của bạn</span>
                 <div style="width: 100%;">
                     <div th:if="${param.mode != null and param.mode[0] == 'register' and error != null}" class="alert">
@@ -159,11 +168,6 @@
         <div class="form-container sign-in-container">
             <form th:action="@{/login}" method="post">
                 <h1>Đăng Nhập</h1>
-                <div class="social-container">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div>
                 <span>Sử dụng tài khoản của bạn</span>
                 <div style="width: 100%;">
                     <div th:if="${param.error != null}" class="alert">Sai thông tin đăng nhập.</div>
@@ -175,7 +179,7 @@
                 </div>
                 <input type="text" name="username" placeholder="Username" required />
                 <input type="password" name="password" placeholder="Password" required />
-                <a href="#">Quên mật khẩu?</a>
+                <a th:href="@{/forgot-password}" class="btn-forgot">Quên mật khẩu?</a>
                 <button type="submit">Đăng Nhập</button>
             </form>
         </div>

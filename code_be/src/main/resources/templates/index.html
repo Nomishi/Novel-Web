@@ -1,14 +1,20 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org">
 
+=======
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebDocTruyen - Read Stories Online</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=26)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+<<<<<<< HEAD
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -55,6 +61,12 @@
             grid-template-columns: 1fr 320px;
             gap: 25px;
         }
+=======
+        .logo { font-weight: bold; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        .menu { display: flex; gap: 25px; align-items: center; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .home-layout { display: grid; grid-template-columns: 1fr 320px; gap: 25px; }
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 
         @media (max-width: 992px) {
             .home-layout {
@@ -98,7 +110,11 @@
 
         .story-card:hover {
             transform: translateY(-5px);
+<<<<<<< HEAD
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+=======
+            box-shadow: 0 8px 15px rgba(0,0,0,0.45);
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
         }
 
         .story-cover {
@@ -138,6 +154,7 @@
             display: none;
         }
 
+<<<<<<< HEAD
         .dropdown-content {
             display: none;
             position: absolute;
@@ -156,6 +173,9 @@
         .user-dropdown.active .dropdown-content {
             display: block !important;
         }
+=======
+        .user-dropdown.active .dropdown-content { display: block !important; }
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 
         #userContextMenu {
             display: none;
@@ -338,6 +358,7 @@
 
 <body>
 
+<<<<<<< HEAD
     <nav class="navbar" th:fragment="common-navbar">
         <a th:href="@{/}" class="logo">🚀 WebDocTruyen</a>
         <div class="menu">
@@ -427,6 +448,62 @@
                         </a>
                     </div>
                 </div>
+=======
+<nav th:fragment="common-navbar" class="navbar">
+    <div class="logo">
+        <a th:href="@{/}">🚀 WEBDOCTRUYEN</a>
+    </div>
+
+    <div class="menu">
+        <a th:href="@{/}">🏠 Trang chủ</a>
+        <a th:href="@{/stories}">📚 Tất cả truyện</a>
+
+        <th:block sec:authorize="isAuthenticated()">
+            <th:block sec:authorize="hasAnyRole('ADMIN', 'ROLE_ADMIN')">
+                <a th:href="@{/admin/scraper}" style="color: #ffeb3b !important; font-weight: bold; margin-right: 15px;">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Quản trị
+                </a>
+            </th:block>
+
+            <div class="user-dropdown" id="userDropdown">
+                <span class="user-name-trigger" onclick="toggleUserMenu(event)">
+                    👤 <span sec:authentication="name"></span>
+                </span>
+                <div class="dropdown-content">
+                    <a th:href="@{/profile}" class="dropdown-item">👤 Hồ sơ</a>
+                    <a th:href="@{/user/bookshelf}" class="dropdown-item">📖 Tủ sách</a>
+
+                    <form th:action="@{/logout}" method="post" style="display: block; border-top: 1px solid #eee; margin-top: 5px;">
+                        <button type="submit" class="logout-btn">🚪 Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </th:block>
+
+        <th:block sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">🔑 Đăng nhập</a>
+        </th:block>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="home-layout">
+        <div class="main-column">
+            <div style="margin-bottom: 25px;">
+                <div class="card" style="margin-bottom: 0;">
+                    <h3>📖 Lịch sử đọc</h3>
+                    <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.</div>
+                    <div th:each="hist, i : ${readingHistory}"
+                         th:if="${i.index < 6}"
+                         style="margin-bottom: 8px; font-size: 14px;">
+                        <a th:href="@{/reader/{id}(id=${hist.currentChapter.id})}" style="color: #2b6cb0; text-decoration: none;">
+                            <span th:text="${hist.story.title}"></span>
+                            - Chương
+                            <span th:text="${hist.currentChapter.chapterNumber}"></span>
+                        </a>
+                    </div>
+                </div>
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
             </div>
 
             <div class="sidebar-column">
@@ -538,6 +615,7 @@
             return () => { clearTimeout(timeout); timeout = setTimeout(func, wait); };
         }
 
+<<<<<<< HEAD
         function showUserContextMenu(event, username, userId) {
             event.preventDefault();
             const menu = document.getElementById('userContextMenu');
@@ -604,6 +682,21 @@
             }
         });
     </script>
+=======
+    function debounce(func, wait) {
+        let timeout;
+        return () => { clearTimeout(timeout); timeout = setTimeout(func, wait); };
+    }
+
+    function showUserContextMenu(event, username, userId) {
+        event.preventDefault();
+        const menu = document.getElementById('userContextMenu');
+        menu.style.display = 'block';
+        menu.style.left = event.pageX + 'px';
+        menu.style.top = event.pageY + 'px';
+    }
+</script>
+>>>>>>> bd8ef613e077bcefb6e30c3ba69f69788537a67c
 </body>
 
 </html>

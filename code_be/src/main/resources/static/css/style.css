@@ -1,3 +1,4 @@
+/* RESET & FONTS */
 * {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
@@ -7,11 +8,11 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     background: #f4f6f9;
     color: #333;
-    -webkit-font-smoothing: antialiased; /* Giúp chữ hiển thị mượt hơn trên máy Mac/iOS */
+    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* TOPBAR & NAVIGATION (Dùng chung cho mọi trang) */
+/* TOPBAR & NAVIGATION */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -25,13 +26,13 @@ body {
 /* Định dạng các liên kết trên Navbar */
 .navbar a, .navbar span {
     text-decoration: none;
-    color: white !important;
+    color: white;
     font-weight: 500;
     transition: 0.3s;
 }
 
 .navbar a:hover {
-    color: #ffeb3b !important;
+    color: #ffeb3b !important; /* Chuyển vàng khi hover trên thanh xanh */
 }
 
 .logo {
@@ -47,9 +48,7 @@ body {
     align-items: center;
 }
 
-/* USER DROPDOWN (CHẾ ĐỘ CLICK) */
-
-/* Container chính */
+/* USER DROPDOWN */
 .user-dropdown {
     position: relative;
     display: inline-block;
@@ -74,56 +73,84 @@ body {
 
 /* Nội dung Menu thả xuống */
 .dropdown-content {
-    display: none; /* Mặc định ẩn */
+    display: none;
     position: absolute;
     right: 0;
     top: 100%;
-    background-color: #ffffff;
-    min-width: 170px;
+    background-color: #ffffff !important; /* Nền trắng bắt buộc */
+    min-width: 180px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
     border: 1px solid #e2e8f0;
-    padding: 8px 0;
+    padding: 5px 0; /* Giảm padding để khung gọn gàng */
     margin-top: 10px;
+    overflow: hidden; /* QUAN TRỌNG: Ngăn hover tràn ra khỏi bo góc */
 }
 
-/* Hiển thị khi Click (Kích hoạt class .active từ JavaScript) */
+/* Hiển thị khi có class .active */
 .user-dropdown.active .dropdown-content {
     display: block !important;
 }
 
-/* Các mục bên trong Menu (Hồ sơ, Tủ sách, Đăng xuất) */
-.dropdown-item, .logout-btn {
-    color: #4a5568 !important;
-    padding: 10px 20px;
-    display: block;
+/* --- CÁC MỤC BÊN TRONG (Hồ sơ, Tủ sách) --- */
+.dropdown-item {
+    color: #2d3748 !important; /* Màu xám than cực rõ trên nền trắng */
+    padding: 10px 15px;
+    display: flex; /* Dùng flex để icon và chữ thẳng hàng */
+    align-items: center;
+    gap: 10px;
     font-size: 14px;
     text-decoration: none;
-    width: 100%;
+    width: 100%; /* Đảm bảo bám sát chiều ngang khung */
+    box-sizing: border-box; /* QUAN TRỌNG: Đảm bảo padding không làm nở rộng thẻ */
     text-align: left;
-    border: none;
     background: none;
-    font-family: inherit;
     cursor: pointer;
     transition: 0.2s;
 }
 
-/* Hiệu ứng khi di chuột vào từng mục nội bộ */
-.dropdown-item:hover, .logout-btn:hover {
-    background-color: #f7fafc;
-    color: #2196f3 !important;
+/* Hiệu ứng khi di chuột vào (Khắc phục lỗi tràn khung) */
+.dropdown-item:hover {
+    background-color: #f1f5f9 !important; /* Màu xám nhạt khi chọn */
+    color: #2196f3 !important; /* Chữ chuyển xanh */
 }
 
-/* Nút đăng xuất có vạch ngăn cách */
+/* --- NÚT ĐĂNG XUẤT --- */
 .logout-btn {
     color: #e53e3e !important;
-    border-top: 1px solid #eee !important;
+    font-weight: bold !important; /* In đậm theo yêu cầu */
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-top: 1px solid #edf2f7 !important;
     margin-top: 5px;
 }
 
-/* BỐ CỤC CHUNG (CONTAINER) */
+.logout-btn:hover {
+    background-color: #fff5f5 !important;
+}
+
+/* BỐ CỤC CHUNG */
 .container {
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
+}
+
+/* FIX FONT AWESOME ICONS */
+.fas, .fab, .far, .fa-solid, .fa-regular {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    font-style: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
 }

@@ -18,7 +18,7 @@ public class AdminStoryController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("story", new Story());
-        return "admin/story-form";
+        return "uploader/story-form";
     }
     @PostMapping("/new")
     public String createStory(@ModelAttribute Story story, @AuthenticationPrincipal UserDetails userDetails) {
