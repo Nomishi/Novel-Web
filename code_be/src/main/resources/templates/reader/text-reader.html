@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="'Chapter ' + ${chapter.chapterNumber} + ' - ' + ${story.title}"></title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .reader-container {
             max-width: 800px;
@@ -88,25 +89,37 @@
             margin-top: 80px; /* 60px của thanh + 20px khoảng cách đệm */
         }
 
-        .toast-notification {
+        .toast-container {
             position: fixed;
-            bottom: 6rem;
-            right: 2rem;
-            background: #334155;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
+            top: 80px; /* Nằm dưới Topbar */
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 280px;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast-success {
+            background-color: #f0fdf4; /* Xanh lá nhạt */
+            color: #10b981;
+            border-left: 5px solid #10b981;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .toast-show {
-            opacity: 1;
-        }
-
+        /* Style cho hộp quà */
         .gift-icon {
             position: fixed;
             bottom: 2rem;
@@ -116,40 +129,26 @@
             width: 3.5rem;
             height: 3.5rem;
             border-radius: 50%;
-            display: flex;
+            display: none; /* Ban đầu ẩn */
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
             cursor: pointer;
             z-index: 1000;
-            transition: transform 0.3s ease, background 0.3s ease;
-            animation: bounce 2s infinite;
+            transition: all 0.3s ease;
+            animation: giftBounce 2s infinite;
         }
-
         .gift-icon:hover {
             transform: scale(1.1);
             background: #059669;
         }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-15px);
-            }
-
-            60% {
-                transform: translateY(-7px);
-            }
+        @keyframes giftBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
+
     </style>
 </head>
 
@@ -184,44 +183,56 @@
         </div>
     </div>
 
-    <div id="gift-icon" class="gift-icon" style="display: none;" title="Nhận phiếu đề cử"
-        onclick="claimNominationTicket()" th:if="${#authorization.expression('isAuthenticated()')}">
-        🎁
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="gift-icon" class="gift-icon" title="Nhận phiếu đề cử"
+         onclick="claimNominationTicket()"
+         th:if="${#authorization.expression('isAuthenticated()')}">
+        <i class="fa-solid fa-gift"></i>
     </div>
-    <div id="gift-toast" class="toast-notification"></div>
 
     <script th:src="@{/js/reader.js}"></script>
     <script th:if="${#authorization.expression('isAuthenticated()')}">
         setTimeout(() => {
             const icon = document.getElementById('gift-icon');
-            if (icon) icon.style.display = 'flex';
-        }, 10000);
+            if (icon) {
+                icon.style.display = 'flex';
+                // Hiệu ứng nhẹ khi xuất hiện
+                icon.style.animation = 'giftBounce 2s infinite, slideInRight 0.5s';
+            }
+        }, 10000); // Đợi đúng 10 giây mới hiện hộp quà
 
         function claimNominationTicket() {
-            fetch('/api/user/claim-nomination-ticket', {
-                method: 'POST'
-            })
+            fetch('/api/user/claim-nomination-ticket', { method: 'POST' })
                 .then(response => {
                     if (response.ok) {
-                        document.getElementById('gift-icon').style.display = 'none';
-                        showToast('Nhận thêm 1 phiếu đề cử thành công!');
-                    } else {
-                        showToast('Có lỗi xảy ra, không thể nhận!');
+                        const icon = document.getElementById('gift-icon');
+                        icon.style.transform = 'scale(0)'; // Thu nhỏ biến mất
+                        setTimeout(() => icon.remove(), 300);
+                        showModernToast('Nhận 1 phiếu đề cử thành công! 🎫', 'success');
                     }
-                })
-                .catch(err => {
-                    showToast('Không thể kết nối tới máy chủ!');
                 });
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('gift-toast');
-            if (!toast) return;
-            toast.innerText = message;
-            toast.classList.add('toast-show');
+        function showModernToast(message, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            toast.innerHTML = `
+        <i class="fa-solid fa-circle-check"></i>
+        <span>${message}</span>
+    `;
+
+            container.appendChild(toast);
+
+            // Tự động biến mất sau 4 giây
             setTimeout(() => {
-                toast.classList.remove('toast-show');
-            }, 3000);
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                toast.style.transition = 'all 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
         }
     </script>
 </body>

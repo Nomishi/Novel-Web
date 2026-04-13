@@ -359,16 +359,15 @@
                         👤 <span th:text="${username}"></span>
                     </span>
                     <div class="dropdown-content">
-                        <a th:href="@{/profile}"
-                            style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">Hồ
-                            sơ</a>
-                        <a th:href="@{/user/bookshelf}"
-                            style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">Tủ
-                            sách</a>
+                        <a th:href="@{/profile}" style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">
+                            <i class="fa-solid fa-user-circle" style="margin-right: 8px;"></i> Hồ sơ
+                        </a>
+                        <a th:href="@{/user/bookshelf}" style="color: #333 !important; display: block; padding: 10px 20px; text-decoration: none;">
+                            <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Tủ sách
+                        </a>
                         <form th:action="@{/logout}" method="post" style="border-top: 1px solid #eee; margin-top: 5px;">
-                            <button type="submit"
-                                style="background: none; border: none; padding: 10px 20px; color: #e53e3e; cursor: pointer; font-family: inherit; width: 100%; text-align: left;"> 
-                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            <button type="submit" style="background: none; border: none; padding: 10px 20px; color: #e53e3e; cursor: pointer; font-family: inherit; width: 100%; text-align: left;">
+                                <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Đăng xuất
                             </button>
                         </form>
                     </div>
