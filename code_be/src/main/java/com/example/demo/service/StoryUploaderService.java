@@ -80,6 +80,7 @@ public class StoryUploaderService {
                 .orElseThrow(() -> new RuntimeException("Truyện không tồn tại"));
         // Chỉ cập nhật các thông tin Uploader được phép sửa
         existingStory.setTitle(updatedData.getTitle());
+        existingStory.setAuthor(updatedData.getAuthor());
         existingStory.setDescription(updatedData.getDescription());
         existingStory.setStatus(updatedData.getStatus());
         existingStory.setCoverImage(updatedData.getCoverImage());

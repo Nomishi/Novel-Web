@@ -114,11 +114,60 @@
         .btn-add-story:hover {
             background-color: #059669;
         }
+
+        .toast-container {
+            position: fixed;
+            top: 80px; /* Nằm dưới Navbar một chút */
+            right: 20px;
+            z-index: 9999; /* Đảm bảo đè lên mọi thứ khác */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 300px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            animation: slideIn 0.3s ease-out; /* Hiệu ứng bay vào */
+        }
+        .toast-success {
+            background-color: #f0fdf4; /* Xanh lá cực nhạt */
+            color: #10b981;            /* Chữ xanh lá đậm */
+            border-left: 5px solid #10b981;
+        }
+        .toast-error {
+            background-color: #fef2f2;  /* Đỏ cực nhạt */
+            color: #ef4444;             /* Chữ đỏ đậm */
+            border-left: 5px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
     </style>
 </head>
 <body>
     <nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
     <div class="container" style="padding: 2rem 1rem;">
+        <div class="toast-container">
+            <div th:if="${success}" class="toast toast-success">
+                <i class="fa-solid fa-circle-check"></i>
+                <span th:text="${success}"></span>
+            </div>
+
+            <div th:if="${error}" class="toast toast-error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
         <h2>My Bookshelf</h2>
         <div class="tabs">
             <div class="tab active" onclick="showTab('recent')">Recently Read</div>
@@ -199,6 +248,14 @@
                     <a th:href="@{/uploader/manage/stories/{id}/chapters/manage(id=${story.id})}" class="btn-continue">
                         <i class="fa-solid fa-list"></i> Chapters
                     </a>
+                    <form th:action="@{/uploader/stories/delete/{id}(id=${story.id})}"
+                          method="post"
+                          th:onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn truyện này và toàn bộ chương liên quan?');"
+                          style="display: inline;">
+                        <button type="submit" class="btn-continue" style="background-color: #ef4444; border: none; cursor: pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
 
             </div>
@@ -228,6 +285,18 @@
                 }
             }
             document.getElementById('userContextMenu').style.display = 'none';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(20px)';
+                    toast.style.transition = 'all 0.5s ease';
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000); // 4 giây
+            });
         });
     </script>
 </body>
