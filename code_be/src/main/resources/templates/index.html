@@ -98,7 +98,7 @@
 
         .story-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
         .story-cover {
@@ -352,9 +352,8 @@
 
             <th:block th:if="${username != null}">
                 <th:block th:if="${isAdmin != null and isAdmin}">
-                    <a th:href="@{/admin/config}" style="color: #ffeb3b;">🛠 Quản trị</a>
+                    <a th:href="@{/admin/scraper}" style="color: #ffeb3b;">🛠 Quản trị</a>
                 </th:block>
-
                 <div class="user-dropdown" id="userDropdown">
                     <span class="user-name-trigger" onclick="toggleUserMenu(event)">
                         👤 <span th:text="${username}"></span>
@@ -380,7 +379,7 @@
     <div class="container">
         <div class="home-layout">
             <div class="main-column">
-                <div style="margin-bottom: 25px;">
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 25px;">
                     <div class="card" style="margin-bottom: 0;">
                         <h3>📖 Lịch sử đọc</h3>
                         <div th:if="${username == null}" style="font-size: 13px; color: #718096;">Đăng nhập để xem.
@@ -392,6 +391,15 @@
                                 - Chương
                                 <span th:text="${hist.currentChapter.chapterNumber}"></span>
                             </a>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3>🌐 Dịch Trung -> Việt</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <textarea id="sourceText" placeholder="Dán văn bản..."
+                                style="flex:1; height: 80px; border-radius: 8px; border: 1px solid #ddd; padding: 8px;"></textarea>
+                            <textarea id="translatedText" readonly
+                                style="flex:1; height: 80px; border-radius: 8px; border: 1px solid #ddd; background: #f7fafc; padding: 8px;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -410,19 +418,6 @@
                 </div>
 
                 <div class="card">
-                    <h3>🌟 Đề cử nhiều nhất</h3>
-                    <div class="grid">
-                        <a th:each="story : ${topNominated}" th:href="@{/story/{slug}(slug=${story.slug})}"
-                           class="story-card">
-                            <img class="story-cover"
-                                 th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
-                                 alt="Cover">
-                            <h4 th:text="${story.title}"></h4>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card">
                     <h3>🆕 Mới cập nhật</h3>
                     <div class="grid">
                         <a th:each="story : ${recentlyUpdated}" th:href="@{/story/{slug}(slug=${story.slug})}"
@@ -432,23 +427,6 @@
                                 alt="Cover">
                             <h4 th:text="${story.title}"></h4>
                         </a>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3><i class="fa-solid fa-shuffle"></i> Gợi ý cho bạn</h3>
-                    <div class="grid">
-                        <div th:each="story : ${randomStories}" class="story-card">
-                            <a th:href="@{/story/{slug}(slug=${story.slug})}">
-                                <img class="story-cover"
-                                     th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
-                                     alt="Cover">
-                                <h4 th:text="${story.title}"></h4>
-                            </a>
-                            <div class="story-info">
-                                <small th:text="${story.author}"></small>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -541,6 +519,17 @@
             }
             document.getElementById('userContextMenu').style.display = 'none';
         });
+
+        // Logic Dịch thuật
+        const sourceText = document.getElementById('sourceText');
+        sourceText?.addEventListener('input', debounce(() => {
+            const text = sourceText.value;
+            if (text.trim()) {
+                fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=vi&dt=t&q=${encodeURIComponent(text)}`)
+                    .then(res => res.json())
+                    .then(data => { document.getElementById('translatedText').value = data[0].map(x => x[0]).join(''); });
+            }
+        }, 500));
 
         function debounce(func, wait) {
             let timeout;
