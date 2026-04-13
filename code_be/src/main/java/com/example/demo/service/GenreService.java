@@ -9,13 +9,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreRepository genreRepository;
+
     public List<Genre> getAllGenres() {
         return genreRepository.findAll();
     }
+
     public Genre getGenreBySlug(String slug) {
         return genreRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Genre not found"));
     }
+
     @Transactional
     public Genre createGenre(String name, String slug) {
         Genre genre = Genre.builder()
@@ -24,6 +27,16 @@ public class GenreService {
                 .build();
         return genreRepository.save(genre);
     }
+
+    @Transactional
+    public void updateGenre(Long id, String name, String slug) {
+        Genre genre = genreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thể loại với ID: " + id));
+        genre.setName(name);
+        genre.setSlug(slug);
+        genreRepository.save(genre);
+    }
+
     @Transactional
     public void deleteGenre(Long id) {
         genreRepository.deleteById(id);

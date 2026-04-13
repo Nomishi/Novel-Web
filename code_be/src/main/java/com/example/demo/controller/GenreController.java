@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class GenreController {
-
     private final GenreService genreService;
 
     @GetMapping
@@ -37,16 +36,16 @@ public class GenreController {
         return "redirect:/admin/genres";
     }
 
-//    @PostMapping("/edit")
-//        public String editGenre(@RequestParam Long id, @RequestParam String name, @RequestParam String slug, RedirectAttributes ra) {
-//            try {
-//                genreService.updateGenre(id, name, slug);
-//                ra.addFlashAttribute("success", "Cập nhật thành công!");
-//            } catch (Exception e) {
-//                ra.addFlashAttribute("error", "Lỗi cập nhật: " + e.getMessage());
-//            }
-//                return "redirect:/admin/genres";
-//        }
+    @PostMapping("/edit")
+        public String editGenre(@RequestParam Long id, @RequestParam String name, @RequestParam String slug, RedirectAttributes ra) {
+            try {
+                genreService.updateGenre(id, name, slug);
+                ra.addFlashAttribute("success", "Cập nhật thành công!");
+            } catch (Exception e) {
+                ra.addFlashAttribute("error", "Lỗi cập nhật: " + e.getMessage());
+            }
+                return "redirect:/admin/genres";
+        }
     
     @PostMapping("/delete/{id}")
     public String deleteGenre(@PathVariable Long id, RedirectAttributes ra) {
