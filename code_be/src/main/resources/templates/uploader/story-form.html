@@ -45,13 +45,11 @@
             transition: all 0.3s ease;
             box-sizing: border-box; /* Đảm bảo padding không làm tràn chiều rộng */
         }
-
         .form-control:focus {
             outline: none;
             border-color: #00bcd4;
             box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
         }
-
         textarea.form-control {
             resize: vertical;
             min-height: 150px;
@@ -64,7 +62,6 @@
             gap: 1rem;
             margin-top: 2rem;
         }
-
         .btn-submit {
             background-color: #00bcd4;
             color: white;
@@ -75,13 +72,11 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-
         .btn-submit:hover {
             background-color: #00acc1;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
         }
-
         .btn-cancel {
             background-color: #edf2f7;
             color: #4a5568;
@@ -92,7 +87,6 @@
             text-align: center;
             transition: background 0.2s;
         }
-
         .btn-cancel:hover {
             background-color: #e2e8f0;
         }
@@ -102,6 +96,35 @@
             margin-bottom: 0.5rem;
             text-align: center;
         }
+
+        .genre-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .genre-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .genre-checkbox-item input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+        @media (max-width: 1024px) {
+            .genre-selection-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .genre-selection-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
     </style>
 </head>
 
@@ -143,6 +166,20 @@
                         <option value="COMPLETED">Completed</option>
                         <option value="PAUSED">Paused</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Genres (Chọn thể loại)</label>
+                    <div class="genre-selection-grid">
+                        <div th:each="genre : ${allGenres}" class="genre-checkbox-item">
+                            <input type="checkbox"
+                                   name="genreIds"
+                                   th:value="${genre.id}"
+                                   th:id="${'genre-' + genre.id}"
+                                   th:checked="${story.genres != null and #sets.contains(story.genres.![id], genre.id)}">
+                            <label th:for="${'genre-' + genre.id}" th:text="${genre.name}">Tên thể loại</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">

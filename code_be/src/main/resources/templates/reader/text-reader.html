@@ -67,8 +67,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 60px; /* Độ cao cố định */
-            background: #00bcd4; /* Màu xanh Cyan giống index */
+            height: 60px;
+            background: #00bcd4;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -79,19 +79,19 @@
             transform: none;
         }
 
-        /* Đảm bảo các thành phần bên trong Topbar có màu trắng */
+        /* các thành phần bên trong Topbar có màu trắng */
         .reader-topbar a, .reader-topbar span {
             color: white;
             text-decoration: none;
         }
 
         .container {
-            margin-top: 80px; /* 60px của thanh + 20px khoảng cách đệm */
+            margin-top: 80px;
         }
 
         .toast-container {
             position: fixed;
-            top: 80px; /* Nằm dưới Topbar */
+            top: 80px;
             right: 20px;
             z-index: 9999;
             display: flex;
@@ -129,7 +129,7 @@
             width: 3.5rem;
             height: 3.5rem;
             border-radius: 50%;
-            display: none; /* Ban đầu ẩn */
+            display: none;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
@@ -148,6 +148,38 @@
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
         }
+
+        /* Container cho toàn bộ khu vực comment ở cuối trang */
+        .comment-section {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Style hộp comment giống Chat cộng đồng */
+        .comment-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        .comment-box {
+            height: 300px; /* Độ cao cố định giống index */
+            overflow-y: auto;
+            border: 1px solid #edf2f7;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .comment-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .comment-user { color: #00bcd4; font-weight: bold; }
 
     </style>
 </head>
@@ -179,6 +211,40 @@
 
                 <a th:if="${nextChapterId != null}" th:href="@{/reader/{id}(id=${nextChapterId})}" class="btn">Next →</a>
                 <button th:if="${nextChapterId == null}" class="btn" disabled>Next →</button>
+            </div>
+
+            <div class="comment-section">
+                <div class="comment-card">
+                    <h3><i class="fa-solid fa-comments"></i> Thảo luận chương</h3>
+
+                    <div class="comment-box" id="commentContainer">
+                        <div th:each="cmt : ${chapterComments}" class="comment-item">
+                            <b class="comment-user" th:text="${cmt.user.username}">User</b>:
+                            <span th:text="${cmt.content}">Nội dung</span>
+                            <div style="font-size: 10px; color: #a0aec0; margin-top: 4px;"
+                                 th:text="${#temporals.format(cmt.createdAt, 'HH:mm dd/MM/yyyy')}"></div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(chapterComments)}" style="text-align: center; color: #94a3b8; padding: 20px;">
+                            Chưa có bình luận nào.
+                        </div>
+                    </div>
+
+                    <form th:if="${username != null}" id="commentForm" style="display: flex; gap: 10px;">
+                        <input type="hidden" id="storyId" th:value="${story.id}">
+                        <input type="hidden" id="chapterId" th:value="${chapter.id}">
+
+                        <input type="text" id="commentInput" placeholder="Nhập bình luận của bạn..." required
+                               style="flex: 1; padding: 10px 15px; border-radius: 25px; border: 1px solid #e2e8f0; outline: none;">
+
+                        <button type="submit" class="btn-submit" style="padding: 0 20px; border-radius: 25px; background: #00bcd4; color: white; border: none; cursor: pointer;">
+                            Gửi
+                        </button>
+                    </form>
+
+                    <div th:if="${username == null}" style="text-align: center; font-size: 14px; color: #718096; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                        🔑 <a th:href="@{/login}" style="color: #00bcd4; font-weight: 600; text-decoration: none;">Đăng nhập</a> để tham gia thảo luận chương này.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -225,7 +291,6 @@
     `;
 
             container.appendChild(toast);
-
             // Tự động biến mất sau 4 giây
             setTimeout(() => {
                 toast.style.opacity = '0';
@@ -235,6 +300,54 @@
             }, 4000);
         }
     </script>
+
+    <script th:inline="javascript">
+        document.getElementById("commentForm")?.addEventListener("submit", function(e) {
+            e.preventDefault(); // CHẶN reload trang
+
+            const input = document.getElementById("commentInput");
+            const content = input.value.trim();
+            const storyId = document.getElementById("storyId").value;
+            const chapterId = document.getElementById("chapterId").value;
+
+            const currentUsername = [[${username}]];
+            if (!content) return;
+
+            // Chuẩn bị dữ liệu khớp với @RequestParam của CommunityController
+            const formData = new URLSearchParams();
+            formData.append("storyId", storyId);
+            formData.append("chapterId", chapterId);
+            formData.append("content", content);
+
+            fetch('/comment/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            })
+                .then(response => {
+                    if (response.ok) {
+                        input.value = "";
+                        //thêm bình luận mới vào danh sách
+                        const container = document.getElementById("commentContainer");
+                        const newMsg = document.createElement("div");
+                        newMsg.className = "comment-item";
+                        newMsg.innerHTML = `
+                <b class="comment-user">${currentUsername}</b>:
+                <span>${content}</span>
+                <div style="font-size: 10px; color: #a0aec0; margin-top: 4px;">Vừa xong</div>
+            `;
+                        container.appendChild(newMsg);
+                        //xuộn xuống cuối hộp bình luận
+                        container.scrollTop = container.scrollHeight;
+                    } else {
+                        alert("Có lỗi xảy ra, vui lòng thử lại.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.entity.Chapter;
 import com.example.demo.service.ChapterService;
+import com.example.demo.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,8 @@ public class ReaderController {
     private final ChapterService chapterService;
     private final ReadingProgressRepository progressRepository;
     private final UserRepository userRepository;
+    private final CommunityService communityService;
+
     @GetMapping("/reader/{chapterId}")
     public String readChapter(@PathVariable Long chapterId, Model model,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -31,6 +34,7 @@ public class ReaderController {
             model.addAttribute("prevChapterId", prevId);
             model.addAttribute("chapter", chapter);
             model.addAttribute("story", chapter.getStory());
+            model.addAttribute("chapterComments", communityService.getChapterComments(chapterId));
             if (userDetails != null) {
                 User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
                 if (user != null) {

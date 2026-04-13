@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.StoryRepository;
 import com.example.demo.service.StoryUploaderService;
+import com.example.demo.service.GenreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/uploader")
 @RequiredArgsConstructor
@@ -20,26 +23,29 @@ public class MyStoryController {
     private final StoryUploaderService uploaderService;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
+    private final GenreService genreService;
 
     @GetMapping("/stories")
-    public String listMyStories(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String listMyStories(Model model,
+                                @AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         model.addAttribute("myStories", uploaderService.getStoriesByUploader(user));
         return "uploader/story-list";
     }
 
-    // Đổi thành /upload-story để không trùng với bất kỳ file nào khác
     @GetMapping("/stories/upload-story")
     public String showUploadForm(Model model) {
         model.addAttribute("story", new Story());
+        model.addAttribute("allGenres", genreService.getAllGenres());
         return "uploader/story-form";
     }
 
     @PostMapping("/stories/upload-story")
     public String processUpload(@ModelAttribute Story story,
+                                @RequestParam(required = false) List<Long> genreIds,
                                 @AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-        uploaderService.uploadNewStory(story, user);
+        uploaderService.uploadNewStory(story, genreIds, user);
         return "redirect:/user/bookshelf";
     }
 
@@ -68,6 +74,7 @@ public class MyStoryController {
         }
         Story story = storyRepository.findById(id).orElseThrow();
         model.addAttribute("story", story);
+        model.addAttribute("allGenres", genreService.getAllGenres());
         model.addAttribute("isEdit", true);
         return "uploader/story-form";
     }
@@ -75,13 +82,13 @@ public class MyStoryController {
     @PostMapping("/stories/edit/{id}")
     public String processUpdate(@PathVariable Long id,
                                 @ModelAttribute("story") Story storyData,
+                                @RequestParam(required = false) List<Long> genreIds,
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 RedirectAttributes ra) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
 
         try {
-            // Bạn cần thêm hàm updateStoryInfo này vào StoryUploaderService
-            uploaderService.updateStoryByOwner(id, storyData, user);
+            uploaderService.updateStoryByOwner(id, storyData, genreIds, user);
             ra.addFlashAttribute("success", "Cập nhật thông tin truyện thành công!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());

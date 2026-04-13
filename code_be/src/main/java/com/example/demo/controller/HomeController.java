@@ -33,6 +33,7 @@ public class HomeController {
             }
         }
         model.addAttribute("topViewed", storyService.getTopViewedStories(8));
+        model.addAttribute("topNominated", storyService.getTopNominatedStories(8));
         model.addAttribute("recentlyUpdated", storyService.getRecentlyUpdatedStories(8));
         model.addAttribute("randomStories", storyService.getRandomStories(4));
         model.addAttribute("chatMessages", chatMessageRepository

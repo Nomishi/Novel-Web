@@ -4,6 +4,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.BookshelfRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ChapterService;
+import com.example.demo.service.GenreService;
 import com.example.demo.service.StoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,12 +27,14 @@ public class StoryController {
     private final ChapterService chapterService;
     private final BookshelfRepository bookshelfRepository;
     private final UserRepository userRepository;
+    private final GenreService genreService;
 
     @GetMapping("/stories")
     public String listStories(
             @RequestParam(required = false) String keyword,
             Model model, 
-            @PageableDefault(size = 18, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 18, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) List<Long> genreIds) {
         
         Specification<Story> spec = null;
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -40,11 +44,19 @@ public class StoryController {
                 cb.like(cb.lower(root.get("author")), likePattern.toLowerCase())
             );
         }
+        if (genreIds != null && !genreIds.isEmpty()) {
+            spec = spec.and((root, query, cb) -> {
+                query.distinct(true); // Tránh trùng lặp kết quả khi một truyện có nhiều thể loại
+                return root.join("genres").get("id").in(genreIds);
+            });
+        }
 
         Page<Story> stories = storyService.getStories(spec, pageable);
         model.addAttribute("stories", stories.getContent());
         model.addAttribute("page", stories);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedGenreIds", genreIds);
+        model.addAttribute("allGenres", genreService.getAllGenres()); // Cần hàm lấy tất cả thể loại
         return "story/list";
     }
 

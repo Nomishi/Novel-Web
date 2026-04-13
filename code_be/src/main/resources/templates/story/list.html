@@ -109,6 +109,56 @@
         .btn-primary:hover {
             background-color: #2563eb;
         }
+
+        /* Container cho dropdown */
+        .genre-filter-wrapper {
+            position: relative;
+            width: 200px;
+        }
+        .custom-dropdown-btn {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .genre-dropdown-panel {
+            display: none; /* Ẩn mặc định */
+            position: absolute;
+            top: 110%;
+            left: 0;
+            z-index: 1000;
+            background: white;
+            width: 600px; /* Độ rộng đủ cho 4 cột */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #e2e8f0;
+        }
+        .genre-dropdown-panel.active {
+            display: block; /* Hiện khi bấm */
+        }
+        .genre-grid-4col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 cột như yêu cầu */
+            gap: 12px;
+        }
+        .genre-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .genre-item input { cursor: pointer; }
+
     </style>
 </head>
 
@@ -121,9 +171,27 @@
         <form th:action="@{/stories}" method="get" class="filters">
             <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Search by title or author..."
                 style="max-width: 300px;">
-            <select class="form-control" style="max-width: 200px;">
-                <option value="">All Genres</option>
-            </select>
+
+            <div class="genre-filter-wrapper">
+                <div class="custom-dropdown-btn" onclick="toggleGenreDropdown(event)">
+                    <span id="genreBtnText">All Genres</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+
+                <div class="genre-dropdown-panel" id="genrePanel">
+                    <div class="genre-grid-4col">
+                        <div th:each="genre : ${allGenres}" class="genre-item">
+                            <input type="checkbox" name="genreIds"
+                                   th:value="${genre.id}"
+                                   th:id="'gen-' + ${genre.id}"
+                                   th:checked="${selectedGenreIds != null and selectedGenreIds.contains(genre.id)}"
+                                   onchange="updateGenreCount()">
+                            <label th:for="'gen-' + ${genre.id}" th:text="${genre.name}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <div th:if="${#lists.isEmpty(stories)}" class="card text-center" style="padding: 3rem;">
@@ -196,17 +264,45 @@
         document.getElementById('userContextMenu').style.display = 'none';
     });
 
+
+    function toggleGenreDropdown(event) {
+        event.stopPropagation();
+        document.getElementById('genrePanel').classList.toggle('active');
+    }
+
+    function closeGenreDropdown() {
+        document.getElementById('genrePanel').classList.remove('active');
+    }
+
+    function updateGenreCount() {
+        const checked = document.querySelectorAll('input[name="genreIds"]:checked');
+        const btnText = document.getElementById('genreBtnText');
+        if (checked.length > 0) {
+            btnText.innerText = `Selected (${checked.length})`;
+        } else {
+            btnText.innerText = "All Genres";
+        }
+    }
+
+    // Đóng dropdown khi bấm ra ngoài
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('genrePanel');
+        const wrapper = document.querySelector('.genre-filter-wrapper');
+        if (panel && !wrapper.contains(e.target)) {
+            panel.classList.remove('active');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', updateGenreCount);
+
+    // Cập nhật hàm jumpToPage để giữ cả genreIds
     function jumpToPage(input) {
         const pageNum = parseInt(input.value);
         const maxPage = parseInt(input.getAttribute('max'));
-
         if (pageNum >= 1 && pageNum <= maxPage) {
-            // Chuyển hướng đến trang tương ứng (Spring Boot nhận trang từ 0 nên phải trừ 1)
-            const keyword = '[[${keyword != null ? keyword : ""}]]';
-            window.location.href = `/stories?page=${pageNum - 1}&keyword=${encodeURIComponent(keyword)}`;
-        } else {
-            alert("Vui lòng nhập trang từ 1 đến " + maxPage);
-            input.value = input.getAttribute('value'); // Reset về số trang cũ
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', pageNum - 1);
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
         }
     }
 </script>

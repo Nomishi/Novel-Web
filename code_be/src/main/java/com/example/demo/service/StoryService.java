@@ -46,6 +46,10 @@ public class StoryService {
         return storyRepository.findTopByViews(PageRequest.of(0, limit));
     }
 
+    public List<Story> getTopNominatedStories(int limit) {
+        return storyRepository.findTopByNominations(PageRequest.of(0, limit));
+    }
+
     public List<Story> getRecentlyUpdatedStories(int limit) {
         return storyRepository.findTopByUpdatedAt(PageRequest.of(0, limit));
     }

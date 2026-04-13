@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Genre;
 import com.example.demo.entity.Story;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Chapter;
+import com.example.demo.repository.GenreRepository;
 import com.example.demo.repository.StoryRepository;
 import com.example.demo.repository.ChapterRepository;
 import com.example.demo.service.StoryService;
@@ -13,10 +15,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+
 public class StoryUploaderService {
     private final StoryRepository storyRepository;
     private final StoryService storyService;
     private final ChapterRepository chapterRepository;
+    private final GenreRepository genreRepository;
 
     public List<Story> getStoriesByUploader(User user) {
         return storyRepository.findByUploader(user);
@@ -38,10 +42,15 @@ public class StoryUploaderService {
     }
 
     @Transactional
-    public Story uploadNewStory(Story story, User uploader) {
+    public Story uploadNewStory(Story story, List<Long> genreIds, User uploader) {
         story.setUploader(uploader);
         story.setViews(0L);
         story.setNominations(0L);
+
+        if (genreIds != null && !genreIds.isEmpty()) {
+            List<Genre> selectedGenres = genreRepository.findAllById(genreIds);
+            story.setGenres(new java.util.HashSet<>(selectedGenres));
+        }
         if (story.getSlug() == null || story.getSlug().isEmpty()) {
             story.setSlug(story.getTitle().toLowerCase().replaceAll("[^a-z0-9]", "-"));
         }
@@ -71,19 +80,24 @@ public class StoryUploaderService {
     }
 
     @Transactional
-    public Story updateStoryByOwner(Long storyId, Story updatedData, User user) {
+    public Story updateStoryByOwner(Long storyId, Story updatedData, List<Long> genreIds, User user) {
         if (!isOwner(storyId, user)) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa truyện này!");
         }
 
         Story existingStory = storyRepository.findById(storyId)
                 .orElseThrow(() -> new RuntimeException("Truyện không tồn tại"));
-        // Chỉ cập nhật các thông tin Uploader được phép sửa
         existingStory.setTitle(updatedData.getTitle());
         existingStory.setAuthor(updatedData.getAuthor());
         existingStory.setDescription(updatedData.getDescription());
         existingStory.setStatus(updatedData.getStatus());
+        existingStory.getGenres().clear();
         existingStory.setCoverImage(updatedData.getCoverImage());
+
+        if (genreIds != null && !genreIds.isEmpty()) {
+            List<Genre> selectedGenres = genreRepository.findAllById(genreIds);
+            existingStory.setGenres(new java.util.HashSet<>(selectedGenres));
+        }
 
         return storyRepository.save(existingStory);
     }
