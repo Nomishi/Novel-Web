@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=20)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
+
+<div class="container" style="padding:2rem;">
+    <h2>🔔 Thông báo</h2>
+
+    <div th:if="${#lists.isEmpty(notifications)}">
+        Không có thông báo nào.
+    </div>
+
+    <div th:each="n : ${notifications}"
+         style="padding:15px; border-bottom:1px solid #eee; cursor:pointer;"
+         class="notification-item"
+         th:data-id="${n.id}"
+         th:data-url="${n.url}"
+         onclick="handleNotificationClick(this)">
+
+        <div th:text="${n.content}">Nội dung thông báo</div>
+        <small th:text="${#temporals.format(n.createdAt,'dd-MM-yyyy HH:mm')}"></small>
+        <span th:if="${!n.isRead}" style="color:red;"> ● </span>
+    </div>
+</div>
+
+<script>
+    // Hàm mới xử lý click an toàn hơn
+    function handleNotificationClick(element) {
+        const id = element.getAttribute('data-id');
+        const url = element.getAttribute('data-url');
+        markRead(id, url);
+    }
+
+    function markRead(id, url) {
+        fetch('/notifications/read/' + id, { method: 'POST' })
+            .then(() => {
+                window.location.href = url;
+            });
+    }
+
+    function toggleUserMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('active');
+    }
+    // Đóng menu khi click ra ngoài
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        }
+        document.getElementById('userContextMenu').style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

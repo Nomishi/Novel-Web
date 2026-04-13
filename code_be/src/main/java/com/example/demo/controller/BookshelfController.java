@@ -8,6 +8,7 @@ import com.example.demo.repository.StoryRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.StoryUploaderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -54,5 +56,16 @@ public class BookshelfController {
         bookshelfRepository.deleteByUserIdAndStoryId(user.getId(), story.getId());
 
         return "redirect:/story/" + story.getSlug();
+    }
+
+    @PostMapping("/bookshelf/toggle-notify")
+    @ResponseBody
+    public ResponseEntity<String> toggleNotification(@RequestParam Long storyId, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        Bookshelf entry = bookshelfRepository.findByUserIdAndStoryId(user.getId(), storyId)
+                .orElseThrow(() -> new RuntimeException("Story not in bookshelf"));
+        entry.setNotifyOnNewChapter(!entry.getNotifyOnNewChapter());
+        bookshelfRepository.save(entry);
+        return ResponseEntity.ok("Success");
     }
 }

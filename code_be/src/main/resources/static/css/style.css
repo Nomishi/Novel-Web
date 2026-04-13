@@ -115,6 +115,27 @@ body {
     color: #2196f3 !important; /* Chữ chuyển xanh */
 }
 
+.user-name-trigger {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background: #e53e3e; /* Màu đỏ */
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid #00bcd4; /* Viền trùng màu Navbar để nổi bật */
+}
+
 /* --- NÚT ĐĂNG XUẤT --- */
 .logout-btn {
     color: #e53e3e !important;

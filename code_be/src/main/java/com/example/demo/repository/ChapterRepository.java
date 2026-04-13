@@ -14,6 +14,7 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     Optional<Chapter> findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(Long storyId, Double chapterNumber);
     Optional<Chapter> findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(Long storyId, Double chapterNumber);
     Optional<Chapter> findByStoryIdAndChapterNumber(Long storyId, Double chapterNumber);
+
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.story.id = :storyId")
     void deleteByStoryId(@Param("storyId") Long storyId);

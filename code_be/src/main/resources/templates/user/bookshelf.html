@@ -207,9 +207,17 @@
                 <div class="flex-col" style="flex-grow: 1;">
                     <a th:href="@{/story/{slug}(slug=${item.story.slug})}" class="story-title"
                         style="font-size: 1.25rem;" th:text="${item.story.title}">Story Title</a>
-                    <div style="font-size: 0.875rem; color: var(--text-color); opacity: 0.8; margin-top: 0.25rem;">
-                        <span th:text="${item.story.status}">Status</span> • Notifications: <span
-                            th:text="${item.notifyOnNewChapter ? 'On' : 'Off'}">On</span>
+
+                    <div class="action" style="display: flex; align-items: center; gap: 10px; margin-top: 12px;">
+                        <form class="toggle-notify-form" style="display: inline;">
+                            <input type="hidden" name="storyId" th:value="${item.story.id}">
+                            <button type="button" class="btn-continue js-btn-notify"
+                                    th:onclick="'toggleNotify(this, ' + ${item.story.id} + ')'"
+                                    th:style="${item.notifyOnNewChapter} ? 'background-color: #10b981;' : 'background-color: #718096;'">
+                                <i th:class="${item.notifyOnNewChapter} ? 'fa-solid fa-bell' : 'fa-solid fa-bell-slash'"></i>
+                                <span class="js-label" th:text="${item.notifyOnNewChapter ? ' Notifications: On' : ' Notifications: Off'}"></span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -298,6 +306,40 @@
                 }, 4000); // 4 giây
             });
         });
+
+        function toggleNotify(button, storyId) {
+            const formData = new URLSearchParams();
+            formData.append("storyId", storyId);
+            // Gửi yêu cầu POST ngầm
+            fetch('/bookshelf/toggle-notify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            })
+                .then(response => {
+                    if (response.ok) {
+                        const icon = button.querySelector('i');
+                        const label = button.querySelector('.js-label');
+                        const isNowOn = icon.classList.contains('fa-bell-slash');
+
+                        if (isNowOn) {
+                            button.style.backgroundColor = '#10b981';
+                            icon.className = 'fa-solid fa-bell';
+                            label.innerText = ' Notifications: On';
+                        } else {
+                            button.style.backgroundColor = '#718096';
+                            icon.className = 'fa-solid fa-bell-slash';
+                            label.innerText = ' Notifications: Off';
+                        }
+                    } else {
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        
     </script>
 </body>
 </html>

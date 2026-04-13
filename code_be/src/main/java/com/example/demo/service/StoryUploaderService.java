@@ -21,6 +21,7 @@ public class StoryUploaderService {
     private final StoryService storyService;
     private final ChapterRepository chapterRepository;
     private final GenreRepository genreRepository;
+    private final ChapterService chapterService;
 
     public List<Story> getStoriesByUploader(User user) {
         return storyRepository.findByUploader(user);
@@ -76,7 +77,7 @@ public class StoryUploaderService {
             chapter.setType(Chapter.ChapterType.TEXT);
         }
 
-        return chapterRepository.save(chapter);
+        return chapterService.saveChapter(chapter);
     }
 
     @Transactional
