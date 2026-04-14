@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Notification> findByUserIdOrderByIsReadAscCreatedAtDesc(Long userId);
     Long countByUserIdAndIsReadFalse(Long userId);
 }

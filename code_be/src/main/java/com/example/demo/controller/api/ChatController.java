@@ -1,4 +1,5 @@
 package com.example.demo.controller.api;
+
 import com.example.demo.entity.ChatMessage;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ChatMessageRepository;
@@ -14,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
+
 public class ChatController {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+
     @PostMapping("/add")
     public ResponseEntity<?> addMessage(
             @RequestParam String content,
@@ -45,6 +49,7 @@ public class ChatController {
         chatMessageRepository.save(message);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/private")
     public ResponseEntity<?> getPrivateMessages(
             @RequestParam Long recipientId,

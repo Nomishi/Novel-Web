@@ -89,36 +89,6 @@
             margin-top: 80px;
         }
 
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            min-width: 280px;
-            padding: 1rem 1.25rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .toast-success {
-            background-color: #f0fdf4; /* Xanh lá nhạt */
-            color: #10b981;
-            border-left: 5px solid #10b981;
-        }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         /* Style cho hộp quà */
         .gift-icon {
             position: fixed;
@@ -181,6 +151,19 @@
         }
         .comment-user { color: #00bcd4; font-weight: bold; }
 
+        .comment-item:target {
+            background-color: #fff9c4 !important; /* Màu vàng nhạt */
+            border: 2px solid #fbc02d; /* Viền vàng đậm hơn */
+            border-radius: 8px;
+            padding: 10px;
+            animation: highlightFade 5s ease-in-out; /* Hiệu ứng mờ dần sau 5 giây */
+        }
+        @keyframes highlightFade {
+            0% { background-color: #fff176; } /* Vàng đậm lúc mới vào */
+            70% { background-color: #fff9c4; }
+            100% { background-color: #f9fafb; } /* Trở về màu nền mặc định của bạn */
+        }
+
     </style>
 </head>
 
@@ -191,8 +174,10 @@
         <button class="btn" style="padding: 0.25rem 0.75rem;"
             onclick="document.body.classList.toggle('dark-mode')">🌙</button>
     </div>
+
     <div id="progress-data" th:data-story-id="${story.id}" th:data-chapter-id="${chapter.id}" style="display: none;">
     </div>
+
     <div class="container">
         <div class="reader-container">
             <div class="reader-header">
@@ -218,12 +203,25 @@
                     <h3><i class="fa-solid fa-comments"></i> Thảo luận chương</h3>
 
                     <div class="comment-box" id="commentContainer">
-                        <div th:each="cmt : ${chapterComments}" class="comment-item">
-                            <b class="comment-user" th:text="${cmt.user.username}">User</b>:
+                        <div th:each="cmt : ${chapterComments}"
+                             th:id="'comment-' + ${cmt.id}"
+                             class="comment-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <b class="comment-user" th:text="${cmt.user.username}">User</b>
+                                </div>
+                                <button th:if="${username != null}"
+                                        style="background: none; border: none; color: #a0aec0; cursor: pointer; font-size: 12px;"
+                                        th:onclick="|openReportModal('COMMENT', ${cmt.id})|"
+                                        title="Báo cáo bình luận này">
+                                    <i class="fas fa-flag"></i>
+                                </button>
+                            </div>
                             <span th:text="${cmt.content}">Nội dung</span>
                             <div style="font-size: 10px; color: #a0aec0; margin-top: 4px;"
                                  th:text="${#temporals.format(cmt.createdAt, 'HH:mm dd/MM/yyyy')}"></div>
                         </div>
+
                         <div th:if="${#lists.isEmpty(chapterComments)}" style="text-align: center; color: #94a3b8; padding: 20px;">
                             Chưa có bình luận nào.
                         </div>
@@ -257,6 +255,32 @@
         <i class="fa-solid fa-gift"></i>
     </div>
 
+    <div id="reportModal" class="modal-report">
+        <div class="modal-report-content">
+            <h3>🚨 Báo cáo vi phạm</h3>
+            <input type="hidden" id="reportTargetId">
+            <input type="hidden" id="reportType">
+
+            <div class="report-field">
+                <label>Lý do:</label>
+                <select id="reportReason">
+                    <option value="Từ ngữ thô tục">Từ ngữ thô tục</option>
+                    <option value="Giới hạn độ tuổi">Giới hạn độ tuổi</option>
+                    <option value="Gây hấn cá nhân">Gây hấn cá nhân</option>
+                    <option value="Khuyến khích bạo lực">Khuyến khích bạo lực</option>
+                </select>
+            </div>
+            <div class="report-field">
+                <label>Mô tả chi tiết (tùy chọn):</label>
+                <textarea id="reportContent" rows="3"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeReportModal()">Hủy</button>
+                <button class="btn" style="background: #ef4444; color: white;" onclick="submitReport()">Gửi báo cáo</button>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/reader.js}"></script>
     <script th:if="${#authorization.expression('isAuthenticated()')}">
         setTimeout(() => {
@@ -280,16 +304,6 @@
                 });
         }
 
-        function showModernToast(message, type) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-
-            toast.innerHTML = `
-        <i class="fa-solid fa-circle-check"></i>
-        <span>${message}</span>
-    `;
-
             container.appendChild(toast);
             // Tự động biến mất sau 4 giây
             setTimeout(() => {
@@ -302,21 +316,35 @@
     </script>
 
     <script th:inline="javascript">
-        document.getElementById("commentForm")?.addEventListener("submit", function(e) {
-            e.preventDefault(); // CHẶN reload trang
+        function showModernToast(message, type) {
+            const container = document.getElementById('toast-container');
+            if(!container) return; // Tránh lỗi nếu thiếu container
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <span>${message}</span>
+    `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                toast.style.transition = 'all 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
 
+        document.getElementById("commentForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
             const input = document.getElementById("commentInput");
             const content = input.value.trim();
-            const storyId = document.getElementById("storyId").value;
-            const chapterId = document.getElementById("chapterId").value;
+            const container = document.getElementById("commentContainer");
+            const currentUsername = [[${username}]]; // Thymeleaf lấy username hiện tại
 
-            const currentUsername = [[${username}]];
-            if (!content) return;
-
-            // Chuẩn bị dữ liệu khớp với @RequestParam của CommunityController
             const formData = new URLSearchParams();
-            formData.append("storyId", storyId);
-            formData.append("chapterId", chapterId);
+            formData.append("storyId", document.getElementById("storyId").value);
+            formData.append("chapterId", document.getElementById("chapterId").value);
             formData.append("content", content);
 
             fetch('/comment/add', {
@@ -326,24 +354,85 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        input.value = "";
-                        //thêm bình luận mới vào danh sách
-                        const container = document.getElementById("commentContainer");
-                        const newMsg = document.createElement("div");
-                        newMsg.className = "comment-item";
-                        newMsg.innerHTML = `
-                <b class="comment-user">${currentUsername}</b>:
+                        // 1. Tạo phần tử HTML mới cho comment vừa đăng
+                        const now = new Date();
+                        const timeStr = now.getHours().toString().padStart(2, '0') + ':' +
+                            now.getMinutes().toString().padStart(2, '0') + ' ' +
+                            now.getDate().toString().padStart(2, '0') + '/' +
+                            (now.getMonth()+1).toString().padStart(2, '0') + '/' +
+                            now.getFullYear();
+
+                        const newComment = document.createElement('div');
+                        newComment.className = 'comment-item';
+                        newComment.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div><b class="comment-user">${currentUsername}</b></div>
+                </div>
                 <span>${content}</span>
-                <div style="font-size: 10px; color: #a0aec0; margin-top: 4px;">Vừa xong</div>
+                <div style="font-size: 10px; color: #a0aec0; margin-top: 4px;">${timeStr}</div>
             `;
-                        container.appendChild(newMsg);
-                        //xuộn xuống cuối hộp bình luận
-                        container.scrollTop = container.scrollHeight;
+
+                        // 2. Chèn vào đầu danh sách (hoặc cuối tùy bạn)
+                        if (container.querySelector('div[style*="text-align: center"]')) {
+                            container.innerHTML = ''; // Xóa dòng "Chưa có bình luận" nếu có
+                        }
+                        container.prepend(newComment);
+
+                        // 3. Reset form và báo Toast
+                        input.value = "";
+                        showModernToast('Đăng bình luận thành công!', 'success');
+                    }
+                });
+        });
+
+        function openReportModal(type, id) {
+            document.getElementById('reportType').value = type;
+            document.getElementById('reportTargetId').value = id;
+            document.getElementById('reportModal').style.display = 'block';
+        }
+        function closeReportModal() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+        function submitReport() {
+            const data = {
+                type: document.getElementById('reportType').value,
+                targetId: document.getElementById('reportTargetId').value,
+                reason: document.getElementById('reportReason').value,
+                content: document.getElementById('reportContent').value
+            };
+
+            fetch('/api/reports/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.text().then(text => ({ ok: res.ok, text })))
+                .then(obj => {
+                    if (obj.ok) {
+                        showModernToast(obj.text, 'success'); // Hiện Toast xanh
+                        closeReportModal();
+                        document.getElementById('reportContent').value = '';
                     } else {
-                        alert("Có lỗi xảy ra, vui lòng thử lại.");
+                        showModernToast(obj.text, 'error'); // Hiện Toast đỏ (ví dụ quá 20 lần)
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    showModernToast('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1); // Lấy ID từ #comment-xxx
+                const element = document.getElementById(targetId);
+                if (element) {
+                    // Cuộn mượt đến phần tử
+                    setTimeout(() => {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 500);
+                }
+            }
         });
 
     </script>

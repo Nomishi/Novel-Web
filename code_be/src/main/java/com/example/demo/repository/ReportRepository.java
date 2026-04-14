@@ -11,14 +11,13 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    
-    // Tìm kiếm các báo cáo chưa xử lý, sắp xếp mới nhất lên đầu (cho Admin)
+    //Báo cáo chưa xử lý, sắp xếp mới nhất lên đầu
     Page<Report> findByProcessedFalseOrderByCreatedAtDesc(Pageable pageable);
 
-    // Kiểm tra xem một người dùng đã báo cáo mục này chưa (tránh spam báo cáo)
+    //User đã báo cáo mục này chưa
     boolean existsByReporterIdAndTypeAndTargetId(Long reporterId, ReportType type, Long targetId);
 
-    // Lấy lịch sử báo cáo của một người dùng cụ thể
+    //Lịch sử báo cáo của user
     List<Report> findByReporterIdOrderByCreatedAtDesc(Long reporterId);
     long countByReporterIdAndTypeAndTargetId(Long reporterId, ReportType type, Long targetId);
 }

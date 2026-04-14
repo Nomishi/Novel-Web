@@ -27,11 +27,18 @@ public class ChapterUploaderController {
     @GetMapping("/stories/{storyId}/chapters/add")
     public String showAddChapterForm(@PathVariable Long storyId,
                                      @AuthenticationPrincipal UserDetails userDetails,
-                                     Model model) {
+                                     Model model,
+                                     RedirectAttributes ra) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
 
         if (!uploaderService.isOwner(storyId, user)) {
             return "redirect:/error?msg=unauthorized";
+        }
+
+        Story story = storyRepository.findById(storyId).orElseThrow();
+        if (story.getStatus() == Story.StoryStatus.LOCKED) {
+            ra.addFlashAttribute("error", "Truyện này đã bị khóa. Bạn không thể thêm chương mới!");
+            return "redirect:/uploader/manage/stories/" + storyId + "/chapters/manage";
         }
 
         model.addAttribute("chapter", new Chapter());
@@ -46,6 +53,13 @@ public class ChapterUploaderController {
                                     @AuthenticationPrincipal UserDetails userDetails,
                                     RedirectAttributes ra) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+
+        Story story = storyRepository.findById(storyId).orElseThrow();
+        if (story.getStatus() == Story.StoryStatus.LOCKED) {
+            ra.addFlashAttribute("error", "Thao tác thất bại! Truyện đã bị khóa.");
+            return "redirect:/uploader/manage/stories/" + storyId + "/chapters/manage";
+        }
+
         try {
             uploaderService.addChapterByOwner(storyId, chapter, user);
             ra.addFlashAttribute("success", "Đăng chương mới thành công!");

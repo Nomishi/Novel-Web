@@ -10,10 +10,16 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByStoryIdAndParentCommentIsNullOrderByCreatedAtDesc(Long storyId);
     List<Comment> findByChapterIdAndParentCommentIsNullOrderByCreatedAtDesc(Long chapterId);
+
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.parentComment IS NOT NULL AND c.story.id = :storyId")
     void deleteRepliesByStoryId(@Param("storyId") Long storyId);
+
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.parentComment IS NULL AND c.story.id = :storyId")
     void deleteRootCommentsByStoryId(@Param("storyId") Long storyId);
+
+    @Modifying
+    @Query("DELETE FROM Comment c WHERE c.id = :id")
+    void deleteByCommentId(@Param("id") Long id);
 }

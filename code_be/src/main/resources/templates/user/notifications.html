@@ -32,18 +32,26 @@
 </div>
 
 <script>
-    // Hàm mới xử lý click an toàn hơn
     function handleNotificationClick(element) {
         const id = element.getAttribute('data-id');
-        const url = element.getAttribute('data-url');
-        markRead(id, url);
+        //đánh dấu đã đọc
+        markRead(id, element);
     }
 
-    function markRead(id, url) {
+    function markRead(id, element) {
         fetch('/notifications/read/' + id, { method: 'POST' })
-            .then(() => {
-                window.location.href = url;
-            });
+            .then(response => {
+                if (response.ok) {
+                    //xóa dấu chấm đỏ
+                    const unreadDot = element.querySelector('span[style*="color:red"]');
+                    if (unreadDot) {
+                        unreadDot.remove();
+                    }
+                    //làm mờ chữ
+                    element.style.opacity = '0.7';
+                }
+            })
+            .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
     }
 
     function toggleUserMenu(event) {

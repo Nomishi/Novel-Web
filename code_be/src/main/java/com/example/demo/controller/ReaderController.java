@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.entity.Chapter;
+import com.example.demo.entity.Story;
 import com.example.demo.service.ChapterService;
 import com.example.demo.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,11 @@ public class ReaderController {
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Chapter chapter = chapterService.getChapterById(chapterId);
+            if (chapter.getStory().getStatus() == Story.StoryStatus.LOCKED) {
+                // Chặn truy cập nội dung
+                return "redirect:/story/" + chapter.getStory().getSlug();
+            }
+
             Long nextId = chapterService.getNextChapterId(chapter.getStory().getId(), chapter.getChapterNumber());
             Long prevId = chapterService.getPrevChapterId(chapter.getStory().getId(), chapter.getChapterNumber());
 
@@ -58,9 +64,7 @@ public class ReaderController {
                     userRepository.save(user);
                 }
             }
-            if (chapter.getType() == Chapter.ChapterType.COMIC) {
-                return "reader/comic-reader";
-            }
+
             return "reader/text-reader";
         } catch (Exception ex) {
             java.io.StringWriter sw = new java.io.StringWriter();

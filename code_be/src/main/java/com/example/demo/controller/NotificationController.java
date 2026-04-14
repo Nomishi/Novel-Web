@@ -22,18 +22,18 @@ public class NotificationController {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    /* Hiển thị trang danh sách thông báo của người dùng hiện tại*/
+    /* trang danh sách thông báo của người dùng hiện tại*/
     @GetMapping
     public String listNotifications(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return "redirect:/login";
         }
-        // Lấy thông tin user để có ID truyền vào Repository
+        //ID truyền vào Repository
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Lấy danh sách thông báo theo UserId và sắp xếp mới nhất lên đầu
-        List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        //danh sách thông báo theo UserId sắp xếp mới nhất lên đầu
+        List<Notification> notifications = notificationRepository.findByUserIdOrderByIsReadAscCreatedAtDesc(user.getId());
         model.addAttribute("notifications", notifications);
         return "user/notifications";
     }
@@ -44,13 +44,14 @@ public class NotificationController {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }
-        notificationRepository.findById(id).ifPresent(notification -> {
+        return notificationRepository.findById(id).map(notification -> {
             // Kiểm tra bảo mật: Chỉ chủ sở hữu thông báo mới được đánh dấu đọc
             if (notification.getUser().getUsername().equals(userDetails.getUsername())) {
                 notification.setIsRead(true);
                 notificationRepository.save(notification);
+                return ResponseEntity.ok().build(); // Trả về 200 OK
             }
-        });
-        return ResponseEntity.ok().build();
+            return ResponseEntity.status(403).build(); // Không có quyền
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

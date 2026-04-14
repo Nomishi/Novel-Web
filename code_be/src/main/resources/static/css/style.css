@@ -92,24 +92,24 @@ body {
     display: block !important;
 }
 
-/* --- CÁC MỤC BÊN TRONG (Hồ sơ, Tủ sách) --- */
+/* CÁC MỤC BÊN TRONG (Hồ sơ, Tủ sách) */
 .dropdown-item {
-    color: #2d3748 !important; /* Màu xám than cực rõ trên nền trắng */
+    color: #2d3748 !important; /* Màu xám than */
     padding: 10px 15px;
     display: flex; /* Dùng flex để icon và chữ thẳng hàng */
     align-items: center;
     gap: 10px;
     font-size: 14px;
     text-decoration: none;
-    width: 100%; /* Đảm bảo bám sát chiều ngang khung */
-    box-sizing: border-box; /* QUAN TRỌNG: Đảm bảo padding không làm nở rộng thẻ */
+    width: 100%; /* bám sát chiều ngang khung */
+    box-sizing: border-box; /* padding không làm nở rộng thẻ */
     text-align: left;
     background: none;
     cursor: pointer;
     transition: 0.2s;
 }
 
-/* Hiệu ứng khi di chuột vào (Khắc phục lỗi tràn khung) */
+/* Hiệu ứng khi di chuột vào */
 .dropdown-item:hover {
     background-color: #f1f5f9 !important; /* Màu xám nhạt khi chọn */
     color: #2196f3 !important; /* Chữ chuyển xanh */
@@ -136,10 +136,10 @@ body {
     border: 2px solid #00bcd4; /* Viền trùng màu Navbar để nổi bật */
 }
 
-/* --- NÚT ĐĂNG XUẤT --- */
+/* NÚT ĐĂNG XUẤT */
 .logout-btn {
     color: #e53e3e !important;
-    font-weight: bold !important; /* In đậm theo yêu cầu */
+    font-weight: bold !important; /* In đậm */
     padding: 10px 15px;
     display: flex;
     align-items: center;
@@ -174,4 +174,59 @@ body {
     font-style: normal;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
+}
+
+.modal-report {
+    display: none;
+    position: fixed;
+    z-index: 10001;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-report-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%; max-width: 400px;
+}
+.report-field { margin-bottom: 15px; }
+.report-field label { display: block; margin-bottom: 5px; font-weight: bold; }
+.report-field select, .report-field textarea {
+    width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;
+}
+
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    min-width: 280px;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toast-success {
+    background-color: #f0fdf4; /* Xanh lá nhạt */
+    color: #10b981;
+    border-left: 5px solid #10b981;
+}
+.toast-error {
+    background-color: #fef2f2;  /* Đỏ cực nhạt */
+    color: #ef4444;             /* Chữ đỏ đậm */
+    border-left: 5px solid #ef4444;
+}
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }

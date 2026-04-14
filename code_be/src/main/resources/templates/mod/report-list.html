@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách báo cáo - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .container { max-width: 1400px !important; width: 95%; margin: 0 auto; }
+
+        .report-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        .report-table th, .report-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .report-table th { background: #f8f9fa; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .badge-story { background: #ebf8ff; color: #2b6cb0; }
+        .badge-comment { background: #faf5ff; color: #6b46c1; }
+        .badge-status { background: #edf2f7; color: #4a5568; }
+        .badge-processed { background: #c6f6d5; color: #22543d; }
+
+        .col-content {
+            white-space: normal !important;
+            min-width: 200px;
+            max-width: 300px;
+            word-break: break-word;
+        }
+
+        .btn-danger-sm{
+            background: #feb2b2; color: #9b2c2c; border: none;
+            padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-danger-sm:hover { background: #fc8181; }
+        .btn-ignore-sm {
+            background: #e2e8f0; color: #4a5568; border: none;
+            padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;
+
+        .view-link {
+            color: #6b46c1; /* Màu tím đậm */
+            text-decoration: none;
+            border-bottom: 2px solid #9f7aea; /* Gạch chân màu tím nhạt hơn */
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .view-link:hover {
+            color: #553c9a;
+            border-bottom-color: #553c9a;
+            opacity: 0.8;
+        }
+
+    </style>
+</head>
+
+<body>
+<nav class="navbar" th:replace="~{index :: common-navbar}"></nav>
+<div id="toast-container" class="toast-container"></div>
+
+<div class="container" style="padding: 2rem;">
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 2rem;">
+        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+           th:href="@{/admin/config}"
+           style="color: #718096; text-decoration: none; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại Dashboard
+        </a>
+        <h2 style="margin: 0;">🚩 Danh sách báo cáo vi phạm</h2>
+    </div>
+
+    <table class="report-table">
+        <thead>
+        <tr>
+            <th>Loại</th>
+            <th>ID Mục</th>
+            <th>Lý do</th>
+            <th class="col-content">Nội dung chi tiết</th>
+            <th>Người báo cáo</th>
+            <th>Thời gian</th>
+            <th></th>
+            <th>Thao tác</th>
+            <th>Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${reports.content}" th:id="'report-' + ${r.id}">
+            <td>
+                <span th:class="'badge badge-' + ${#strings.toLowerCase(r.type)}" th:text="${r.type}"></span>
+            </td>
+            <td th:text="${r.targetId}"></td>
+            <td th:text="${r.reason}"></td>
+            <td class="col-content" th:text="${r.content}"></td>
+            <td th:text="${r.reporter.username}"></td>
+            <td th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+
+            <td>
+                <a th:if="${r.type.name() == 'STORY'}"
+                   th:href="@{'/mod/reports/check-story/' + ${r.targetId}}"
+                   target="_blank"
+                   class="view-link">
+                    Đến xem
+                </a>
+                <a th:if="${r.type.name() == 'COMMENT'}"
+                   th:href="@{'/mod/reports/check-comment/' + ${r.targetId}}"
+                   target="_blank"
+                   class="view-link">
+                    Đến xem
+                </a>
+            </td>
+
+            <td style="display: flex; gap: 5px;">
+                <th:block th:if="${r.type.name() == 'COMMENT'}">
+                    <button class="btn-danger-sm" th:onclick="'handleAction(' + ${r.id} + ', \'delete-comment\')'">Xóa comment</button>
+                    <button class="btn-ignore-sm" th:onclick="'handleAction(' + ${r.id} + ', \'ignore\')'">Bỏ qua</button>
+                </th:block>
+
+                <th:block th:if="${r.type.name() == 'STORY'}">
+                    <button class="btn-danger-sm" th:onclick="'handleAction(' + ${r.id} + ', \'lock-story\')'">Khóa truyện</button>
+                    <button class="btn-ignore-sm" th:onclick="'handleAction(' + ${r.id} + ', \'ignore\')'">Bỏ qua</button>
+                </th:block>
+            </td>
+
+            <td>
+                <span class="badge badge-status">Chờ xử lý</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:inline="javascript">
+    function showModernToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        // Chọn icon dựa trên loại thông báo
+        const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+
+        toast.innerHTML = `
+            <i class="fa-solid ${icon}"></i>
+            <span>${message}</span>
+        `;
+
+        container.appendChild(toast);
+        // Tự động xóa sau 4 giây
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            toast.style.transition = 'all 0.5s ease';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    function processReport(id) {
+        // Vẫn giữ confirm để tránh bấm nhầm xử lý
+        if(!confirm('Đánh dấu báo cáo này đã xử lý?')) return;
+
+        fetch('/mod/reports/process/' + id, { method: 'POST' })
+            .then(res => {
+                if(res.ok) {
+                    // Xóa dòng trên bảng
+                    const row = document.getElementById('report-' + id);
+                    if(row) row.remove();
+
+                    // Hiển thị thông báo thành công
+                    showModernToast('Đã xử lý báo cáo thành công!', 'success');
+                } else {
+                    showModernToast('Có lỗi xảy ra khi xử lý!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showModernToast('Không thể kết nối đến máy chủ!', 'error');
+            });
+    }
+
+    function toggleUserMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) dropdown.classList.toggle('active');
+    }
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        }
+    });
+
+    function handleAction(reportId, actionType) {
+        let confirmMsg = actionType === 'ignore' ? 'Bỏ qua báo cáo này?' : 'Thực hiện xử lý vi phạm này?';
+        if(!confirm(confirmMsg)) return;
+        // Gửi yêu cầu về server
+        fetch(`/mod/reports/handle/${reportId}?action=${actionType}`, { method: 'POST' })
+            .then(res => {
+                if(res.ok) {
+                    showModernToast('Thao tác thành công!', 'success');
+                    // Cập nhật trạng thái dòng thay vì xóa luôn để Mod biết đã làm xong
+                    const row = document.getElementById('report-' + reportId);
+                    const statusBadge = row.querySelector('.badge-status');
+                    statusBadge.className = 'badge badge-processed';
+                    statusBadge.innerText = 'Đã xử lý';
+                    // Làm mờ dòng và ẩn các nút thao tác
+                    row.style.opacity = '0.6';
+                    row.querySelector('td:last-child').innerHTML = '<small>Đã check</small>';
+                } else {
+                    showModernToast('Lỗi xử lý hệ thống!', 'error');
+                }
+            });
+    }
+
+</script>
+</body>
+</html>

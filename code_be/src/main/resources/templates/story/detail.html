@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${story.title} + ' - WebDocTruyen'"></title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v=30)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=26)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -129,7 +129,6 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
             color: white;
-            /* Ensure text stays white */
         }
 
         .btn-read:active {
@@ -191,8 +190,25 @@
             background-color: #f8fafc;
             color: #2563eb;
             padding-left: 2.25rem;
-            /* Slight indent animation */
         }
+
+        .locked-alert {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            color: #c53030;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .locked-alert i { font-size: 3rem; margin-bottom: 10px; }
+        .locked-alert h3 { margin: 0 0 10px 0; font-weight: bold; }
+        .badge-locked {
+            background: #fee2e2;
+            color: #ef4444;
+            border-color: #fecaca;
+        }
+
     </style>
 </head>
 
@@ -211,7 +227,10 @@
             <div class="meta-badges">
                 <span class="badge"><i class="fas fa-pen-nib" style="color:#64748b;"></i> <span
                         th:text="${story.author}">Tác giả</span></span>
-                <span class="badge badge-status" th:text="${story.status}">ONGOING</span>
+                <span class="badge"
+                      th:classappend="${story.status.name() == 'LOCKED' ? 'badge-locked' : 'badge-status'}"
+                      th:text="${story.status}">ONGOING
+                </span>
                 <span class="badge"><i class="fas fa-eye" style="color:#64748b;"></i> Lượt xem: <span
                         th:text="${story.views}">0</span></span>
                 <span class="badge" style="color: #ea580c; border-color: #ffedd5; background: #fff7ed;"><i
@@ -220,10 +239,22 @@
                         class="fas fa-thumbs-up"></i> Đề cử: <span id="nominationCount"
                             th:text="${story.nominations != null ? story.nominations : 0}">0</span></span>
             </div>
-            <div class="story-desc" th:utext="${story.description}">
+            <div class="story-desc" th:unless="${story.status.name() == 'LOCKED'}" th:utext="${story.description}">
                 Mô tả truyện...
             </div>
-            <div class="action-buttons">
+            <div th:if="${story.status.name() == 'LOCKED'}"
+                 style="background: #fff5f5; border: 2px solid #feb2b2; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                <div style="background: #fee2e2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-lock" style="font-size: 1.5rem; color: #ef4444;"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; color: #991b1b; font-size: 1.2rem; font-weight: 700;">Truyện này hiện đã bị khóa</h3>
+                    <p style="margin: 0.25rem 0 0 0; color: #b91c1c; font-size: 0.95rem; line-height: 1.5;">
+                        Nội dung hiện không khả dụng do vi phạm quy định cộng đồng hoặc theo yêu cầu điều tra vi phạm bản quyền.
+                    </p>
+                </div>
+            </div>
+            <div class="action-buttons" th:unless="${story.status.name() == 'LOCKED'}">
                 <a th:if="${not #lists.isEmpty(chapters)}"
                    th:href="@{/reader/{chapterId}(chapterId=${chapters[0].id})}" class="btn-animated btn-read">
                     <i class="fas fa-book-open"></i> Đọc Từ Đầu
@@ -255,24 +286,68 @@
                         style="color: #10b981; border-color: #10b981;">
                     <i class="fas fa-thumbs-up"></i> Đề Cử
                 </button>
+
+                <button th:if="${#authorization.expression('isAuthenticated()')}"
+                        type="button" class="btn-animated btn-outline"
+                        th:onclick="|openReportModal('STORY', ${story.id})|"
+                        style="color: #64748b; border-color: #cbd5e1;">
+                    <i class="fas fa-flag"></i> Báo cáo
+                </button>
             </div>
         </div>
     </div>
+
     <div class="chapter-list">
-        <div class="chapter-header">
-            <i class="fas fa-list-ul" style="color: #3b82f6;"></i> Danh Sách Chương
+        <div th:if="${story.status.name() == 'LOCKED'}"
+             style="padding: 3rem; text-align: center; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; margin-bottom: 3rem; color: #64748b;">
+            <i class="fas fa-eye-slash" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+            Danh sách chương đã bị ẩn bởi quản trị viên.
         </div>
-        <div th:if="${#lists.isEmpty(chapters)}"
-             style="padding: 3rem; text-align: center; color: #64748b; font-style: italic;">
-            Truyện hiện tại chưa có chương nào được đăng tải.
+
+        <th:block th:unless="${story.status.name() == 'LOCKED'}">
+            <div class="chapter-header">
+                <i class="fas fa-list-ul" style="color: #3b82f6;"></i> Danh Sách Chương
+            </div>
+            <div th:if="${#lists.isEmpty(chapters)}"
+                 style="padding: 3rem; text-align: center; color: #64748b; font-style: italic;">
+                Truyện hiện tại chưa có chương nào được đăng tải.
+            </div>
+            <a th:each="chapter : ${chapters}" th:href="@{/reader/{id}(id=${chapter.id})}" class="chapter-item">
+                <span th:text="'Chương ' + ${chapter.chapterNumber} + ': ' + ${chapter.title}">Chương 1</span>
+                <span class="badge" th:text="${#temporals.format(chapter.createdAt, 'dd-MM-yyyy')}"
+                      style="font-size: 0.75rem; background: transparent; border: none; color: #94a3b8;">01-01-2026</span>
+            </a>
+        </th:block>
+    </div>
+
+</div>
+
+<div id="reportModal" class="modal-report">
+    <div class="modal-report-content">
+        <h3>🚨 Báo cáo vi phạm</h3>
+        <input type="hidden" id="reportTargetId">
+        <input type="hidden" id="reportType">
+
+        <div class="report-field">
+            <label>Lý do:</label>
+            <select id="reportReason">
+                <option value="Từ ngữ thô tục">Từ ngữ thô tục</option>
+                <option value="Giới hạn độ tuổi">Giới hạn độ tuổi</option>
+                <option value="Gây hấn cá nhân">Gây hấn cá nhân</option>
+                <option value="Khuyến khích bạo lực">Khuyến khích bạo lực</option>
+            </select>
         </div>
-        <a th:each="chapter : ${chapters}" th:href="@{/reader/{id}(id=${chapter.id})}" class="chapter-item">
-            <span th:text="'Chương ' + ${chapter.chapterNumber} + ': ' + ${chapter.title}">Chương 1</span>
-            <span class="badge" th:text="${#temporals.format(chapter.createdAt, 'dd-MM-yyyy')}"
-                  style="font-size: 0.75rem; background: transparent; border: none; color: #94a3b8;">01-01-2026</span>
-        </a>
+        <div class="report-field">
+            <label>Mô tả chi tiết (tùy chọn):</label>
+            <textarea id="reportContent" rows="3"></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn" onclick="closeReportModal()">Hủy</button>
+            <button class="btn" style="background: #ef4444; color: white;" onclick="submitReport()">Gửi báo cáo</button>
+        </div>
     </div>
 </div>
+<div id="toast-container" class="toast-container"></div>
 
 <script th:inline="javascript">
     function toggleUserMenu(event) {
@@ -292,7 +367,27 @@
         document.getElementById('userContextMenu').style.display = 'none';
     });
 
+    function showModernToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if(!container) return; // Tránh lỗi nếu thiếu container
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+        toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <span>${message}</span>
+    `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            toast.style.transition = 'all 0.5s ease';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
     const storyId = /*[[${story.id}]]*/ null;
+
     function nominateStory() {
         if (!storyId) return;
         fetch(`/api/stories/${storyId}/nominate`, {
@@ -302,19 +397,61 @@
                 if (response.ok) {
                     return response.json();
                 } else if (response.status === 400) {
-                    alert('Bạn không có đủ phiếu đề cử! Hãy đọc truyện 10s để nhận thêm nhé.');
+                    showModernToast('Bạn không có đủ phiếu đề cử!', 'error');
                     throw new Error('Not enough tickets');
                 } else {
-                    alert('Có lỗi xảy ra hoặc bạn phải đăng nhập!');
-                    throw new Error('Network response was not ok');
+                    showModernToast('Vui lòng đăng nhập để đề cử!', 'error');
+                    throw new Error('Unauthorized');
                 }
             })
             .then(data => {
                 document.getElementById('nominationCount').innerText = data;
-                alert('Đề cử thành công!');
+                showModernToast('Đề cử thành công!', 'success');
             })
             .catch(error => console.error('Error:', error));
     }
+
+    function openReportModal(type, id) {
+        document.getElementById('reportType').value = type;
+        document.getElementById('reportTargetId').value = id;
+        document.getElementById('reportModal').style.display = 'block';
+    }
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+    }
+    function submitReport() {
+        const data = {
+            type: document.getElementById('reportType').value,
+            targetId: document.getElementById('reportTargetId').value,
+            reason: document.getElementById('reportReason').value,
+            content: document.getElementById('reportContent').value
+        };
+
+        fetch('/api/reports/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                return res.text().then(text => ({
+                    ok: res.ok,
+                    message: text
+                }));
+            })
+            .then(result => {
+                if (result.ok) {
+                    showModernToast(result.message, 'success');
+                    closeReportModal();
+                    document.getElementById('reportContent').value = ''; // Xóa trắng nội dung sau khi gửi
+                } else {
+                    showModernToast(result.message, 'error');
+                }
+            })
+            .catch(error => {
+                showModernToast('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+            });
+    }
+
 </script>
 
 </body>

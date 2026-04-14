@@ -176,9 +176,15 @@
             <p style="color: #718096; margin-bottom: 5px;">Quản lý nội dung của:</p>
             <h2 th:text="${story.title}">Tên Truyện</h2>
         </div>
-        <a th:href="@{/uploader/manage/stories/{id}/chapters/add(id=${story.id})}" class="btn-add">
+        <a th:unless="${story.status.name() == 'LOCKED'}" th:href="@{/uploader/manage/stories/{id}/chapters/add(id=${story.id})}" class="btn-add">
             <i class="fa-solid fa-plus"></i> Thêm Chương Mới
         </a>
+    </div>
+
+    <div th:if="${story.status.name() == 'LOCKED'}"
+         style="background-color: #fef2f2; color: #b91c1c; padding: 1rem; border-radius: 8px; border: 1px solid #fecaca; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <strong>Thông báo:</strong> Truyện này đang bị khóa bởi Quản trị viên. Bạn không thể đăng thêm hoặc chỉnh sửa chương.
     </div>
 
     <table class="chapter-table">
@@ -196,19 +202,23 @@
             <td th:text="${chap.title}">Tiêu đề chương</td>
             <td th:text="${#temporals.format(chap.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
             <td class="action-btns">
-                <a th:href="@{/uploader/manage/stories/{sId}/chapters/edit/{cId}(sId=${storyId}, cId=${chap.id})}"
-                   class="edit-link">
-                    <i class="fa-solid fa-pen"></i> Sửa
-                </a>
+                <th:block th:if="${story.status.name() != 'LOCKED'}">
+                    <a th:href="@{/uploader/manage/stories/{sId}/chapters/edit/{cId}(sId=${storyId}, cId=${chap.id})}"
+                       class="edit-link">
+                        <i class="fa-solid fa-pen"></i> Sửa
+                    </a>
 
-                <form th:action="@{/uploader/manage/stories/{sId}/chapters/delete/{cId}(sId=${storyId}, cId=${chap.id})}"
-                      method="post"
-                      style="display: inline;"
-                      th:onsubmit="return confirm('Bạn có chắc chắn muốn xóa chương này không?')">
-                    <button type="submit" class="delete-btn">
-                        <i class="fa-solid fa-trash"></i> Xóa
-                    </button>
-                </form>
+                    <form th:action="@{/uploader/manage/stories/{sId}/chapters/delete/{cId}(sId=${storyId}, cId=${chap.id})}"
+                          method="post" style="display: inline;"
+                          th:onsubmit="return confirm('Bạn có chắc chắn muốn xóa chương này không?')">
+                        <button type="submit" class="delete-btn">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </th:block>
+
+                <span th:if="${story.status.name() == 'LOCKED'}"
+                      style="color: #a0aec0; font-size: 0.85rem;">Không thể thao tác</span>
             </td>
         </tr>
         </tbody>
