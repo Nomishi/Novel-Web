@@ -151,22 +151,6 @@
 
         <div class="card">
             <div class="card-content">
-                <h3>Hot Search Keywords</h3>
-                <p style="font-size: 0.875rem; color: #718096; margin-bottom: 1.5rem;">Most searched terms by users.</p>
-                <div class="tags-list">
-                        <span th:each="history : ${hotKeywords}" class="tag-item">
-                            <span th:text="${history.keyword}">Keyword</span>
-                            <span class="tag-count" th:text="${history.searchCount}">0</span>
-                        </span>
-                    <div th:if="${#lists.isEmpty(hotKeywords)}" style="color: #94a3b8; font-style: italic; font-size: 0.9rem;">
-                        No search data accumulated yet.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-content">
                 <h3>Content Admin</h3>
                 <p style="font-size: 0.875rem; color: #718096; margin-bottom: 1.5rem;">
                     Organize and manage story genres and classifications.
@@ -179,9 +163,7 @@
                 <i class="fa-solid fa-tags" style="margin-right: 8px;"></i> Manage Genres
             </a>
         </div>
-    </div>
 
-    <div class="dashboard-grid" style="margin-top: 2rem; border-top: 2px solid #e2e8f0; padding-top: 2rem;">
         <div class="card report-card-special">
             <div class="card-content">
                 <h3 style="border-left-color: #e53e3e;">🚩 Báo cáo vi phạm</h3>
@@ -198,6 +180,10 @@
                 <i class="fa-solid fa-flag" style="margin-right: 8px;"></i> Quản lý báo cáo
             </a>
         </div>
+        
+    </div>
+
+    <div class="dashboard-grid" style="margin-top: 2rem; border-top: 2px solid #e2e8f0; padding-top: 2rem;">
 
         <div class="card">
             <div class="card-content">
