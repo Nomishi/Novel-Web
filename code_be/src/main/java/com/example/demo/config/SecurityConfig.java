@@ -20,7 +20,7 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/", "/register", "/login","/forgot-password", "/reset-password", "/css/**", "/js/**",
                                                                 "/images/**", "/stories", "/story/**", "/reader/**",
-                                                                "/api/**", "/error")
+                                                                "/api/**", "/error", "/maintenance")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/mod/**").hasAnyRole("ADMIN", "MOD")

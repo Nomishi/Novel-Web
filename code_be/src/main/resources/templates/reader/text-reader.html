@@ -303,7 +303,6 @@
                     }
                 });
         }
-
             container.appendChild(toast);
             // Tự động biến mất sau 4 giây
             setTimeout(() => {
@@ -312,7 +311,7 @@
                 toast.style.transition = 'all 0.5s ease';
                 setTimeout(() => toast.remove(), 500);
             }, 4000);
-        }
+
     </script>
 
     <script th:inline="javascript">

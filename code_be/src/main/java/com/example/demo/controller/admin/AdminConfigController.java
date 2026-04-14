@@ -1,4 +1,5 @@
 package com.example.demo.controller.admin;
+
 import com.example.demo.entity.SystemConfig;
 import com.example.demo.repository.SearchHistoryRepository;
 import com.example.demo.repository.SystemConfigRepository;
@@ -10,12 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 @Controller
 @RequestMapping("/admin/config")
 @RequiredArgsConstructor
+
 public class AdminConfigController {
     private final SystemConfigRepository systemConfigRepository;
     private final SearchHistoryRepository searchHistoryRepository;
+
     @GetMapping
     public String showConfigDashboard(Model model) {
         String maintenanceMode = systemConfigRepository.findById("MAINTENANCE_MODE")
@@ -27,6 +31,7 @@ public class AdminConfigController {
         model.addAttribute("hotKeywords", searchHistoryRepository.findTop10ByOrderBySearchCountDesc());
         return "admin/config-dashboard";
     }
+
     @PostMapping("/update")
     public String updateConfig(@RequestParam(required = false) boolean maintenanceMode,
             @RequestParam(required = false) boolean adsEnabled,
@@ -36,4 +41,5 @@ public class AdminConfigController {
         redirectAttributes.addFlashAttribute("success", "System configuration updated successfully.");
         return "redirect:/admin/config";
     }
+
 }

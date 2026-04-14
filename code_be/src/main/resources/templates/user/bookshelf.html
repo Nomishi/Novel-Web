@@ -174,13 +174,15 @@
             <div class="tab" onclick="showTab('followed')">Followed Stories</div>
             <div class="tab" onclick="showTab('uploaded')">My Stories</div>
         </div>
+
         <div id="recent" class="tab-content">
             <div th:if="${#lists.isEmpty(progressList)}" class="card text-center text-muted">No recently read stories.
             </div>
             <div th:each="prog : ${progressList}" class="list-item">
-                <img th:if="${prog.story.coverImage}" th:src="${prog.story.coverImage}" class="list-img" alt="Cover">
-                <div th:unless="${prog.story.coverImage}"
-                    class="list-img flex items-center justify-center text-center text-sm text-muted">No Cover</div>
+                <img th:src="${prog.story.coverImage != null and prog.story.coverImage != '' ? prog.story.coverImage : '/images/default-cover.png'}"
+                     class="list-img"
+                     alt="Cover">
+
                 <div class="flex-col" style="flex-grow: 1;">
                     <a th:href="@{/reader/{id}(id=${prog.currentChapter.id})}" class="story-title"
                         style="font-size: 1.25rem;" th:text="${prog.story.title}">Story Title</a>
@@ -201,9 +203,10 @@
         <div id="followed" class="tab-content" style="display: none;">
             <div th:if="${#lists.isEmpty(bookshelf)}" class="card text-center text-muted">No followed stories.</div>
             <div th:each="item : ${bookshelf}" class="list-item">
-                <img th:if="${item.story.coverImage}" th:src="${item.story.coverImage}" class="list-img" alt="Cover">
-                <div th:unless="${item.story.coverImage}"
-                    class="list-img flex items-center justify-center text-center text-sm text-muted">No Cover</div>
+                <img th:src="${item.story.coverImage != null and item.story.coverImage != '' ? item.story.coverImage : '/images/default-cover.png'}"
+                      class="list-img"
+                      alt="Cover">
+
                 <div class="flex-col" style="flex-grow: 1;">
                     <a th:href="@{/story/{slug}(slug=${item.story.slug})}" class="story-title"
                         style="font-size: 1.25rem;" th:text="${item.story.title}">Story Title</a>
@@ -232,10 +235,9 @@
 
             <div th:if="${#lists.isEmpty(myStories)}" class="card text-center text-muted">You haven't posted any stories yet.</div>
             <div th:each="story : ${myStories}" class="list-item">
-                <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="list-img" alt="Cover">
-                <div th:unless="${story.coverImage}"
-                     class="list-img flex items-center justify-center text-center text-sm text-muted"
-                     style="background: #f7fafc; border: 1px dashed #cbd5e0;">No Cover</div>
+                <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                     class="list-img"
+                     alt="Cover">
 
                 <div class="flex-col" style="flex-grow: 1;">
                     <a th:href="@{/story/{slug}(slug=${story.slug})}" class="story-title"

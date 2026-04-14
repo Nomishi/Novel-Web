@@ -1,10 +1,15 @@
 package com.example.demo.service;
+
 import com.example.demo.entity.Chapter;
 import com.example.demo.repository.ChapterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +35,13 @@ public class ChapterService {
         return chapterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chapter not found"));
     }
+
+    public Page<Chapter> getChaptersByStoryId(Long storyId, int page) {
+        return chapterRepository.findByStoryId(
+                storyId,
+                PageRequest.of(page, 40, Sort.by("chapterNumber").ascending()));
+    }
+
     @Transactional
     public Chapter saveChapter(Chapter chapter) {
         Chapter saved = chapterRepository.save(chapter);

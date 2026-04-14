@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý người dùng - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .user-table th, .user-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .user-table th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+        .badge-mod {
+            background: #805ad5;
+            color: white;
+        }
+        .badge-admin {
+            background: #e53e3e;
+            color: white;
+        }
+        .badge-user {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+        .badge-uploader {
+            background: #38a169;
+            color: white;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            transition: 0.3s;
+        }
+        .btn-give {
+            background: #4299e1;
+            color: white;
+        }
+        .btn-revoke {
+            background: #feb2b2;
+            color: #c53030;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav th:replace="~{index :: common-navbar}"></nav>
+    <div class="container" style="padding: 2rem 1rem; max-width: 1000px; margin: 0 auto;">
+        <h2>Quản lý phân quyền</h2>
+        <div th:if="${success}" class="card" style="margin-bottom: 1rem; padding: 1rem; background: #f0fdf4; border: 1px solid #10b981;">
+            <span th:text="${success}" style="color: #10b981;"></span>
+        </div>
+
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Quyền hiện tại</th>
+                    <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span th:each="role : ${user.roles}"
+                          th:classappend="${role.name == 'ROLE_ADMIN' ? 'badge-admin' :
+                                            (role.name == 'ROLE_MOD' ? 'badge-mod' :
+                                            (role.name == 'ROLE_UPLOADER' ? 'badge-uploader' : 'badge-user'))}"
+                          class="badge" th:text="${role.name}"></span>
+                </td>
+                <td>
+                    <form th:action="@{/admin/users/{id}/toggle-mod(id=${user.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-action"
+                                th:classappend="${#lists.toList(user.roles.![name]).contains('ROLE_MOD') ? 'btn-revoke' : 'btn-give'}">
+                            <i class="fa-solid" th:classappend="${#lists.toList(user.roles.![name]).contains('ROLE_MOD') ? 'fa-user-minus' : 'fa-user-plus'}"></i>
+                            <span th:text="${#lists.toList(user.roles.![name]).contains('ROLE_MOD') ? ' Thu hồi MOD' : ' Cấp MOD'}"></span>
+                        </button>
+                    </form>
+
+                    <form th:action="@{/admin/users/{id}/toggle-uploader(id=${user.id})}" method="post" style="display:inline; margin-left: 5px;">
+                        <button type="submit" class="btn-action"
+                                th:styleappend="${#lists.toList(user.roles.![name]).contains('ROLE_UPLOADER') ? 'background:#c6f6d5; color:#22543d;' : 'background:#48bb78; color:white;'}">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span th:text="${#lists.toList(user.roles.![name]).contains('ROLE_UPLOADER') ? ' Thu hồi Up' : ' Cấp Up'}"></span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Đóng menu khi click ra ngoài
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && dropdown.classList.contains('active')) {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            }
+            document.getElementById('userContextMenu').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -157,7 +157,6 @@
             overflow: hidden;
             margin-bottom: 3rem;
         }
-
         .chapter-header {
             padding: 1.25rem 2rem;
             background: #f8fafc;
@@ -169,7 +168,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .chapter-item {
             display: flex;
             justify-content: space-between;
@@ -181,15 +179,47 @@
             text-decoration: none;
             font-weight: 500;
         }
-
         .chapter-item:last-child {
             border-bottom: none;
         }
-
         .chapter-item:hover {
             background-color: #f8fafc;
             color: #2563eb;
             padding-left: 2.25rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+        .page-btn {
+            padding: 0.5rem 0.8rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .page-btn:hover {
+            color: #1e293b;
+        }
+        .page-btn.active {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .page-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ef4444; /* Gạch đỏ dưới số trang đang chọn */
+            border-radius: 2px;
         }
 
         .locked-alert {
@@ -218,10 +248,10 @@
 
 <div class="container" style="padding: 2rem 1rem;">
     <div class="story-header">
-        <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-cover-large" alt="Cover">
-        <div th:unless="${story.coverImage}" class="story-cover-large flex items-center justify-center">
-            <span style="color: #94a3b8; font-weight: 500;">Chưa có ảnh bìa</span>
-        </div>
+        <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+             class="story-cover"
+             alt="Cover">
+
         <div class="story-details">
             <h1 th:text="${story.title}">Tên Truyện</h1>
             <div class="meta-badges">
@@ -308,16 +338,32 @@
             <div class="chapter-header">
                 <i class="fas fa-list-ul" style="color: #3b82f6;"></i> Danh Sách Chương
             </div>
-            <div th:if="${#lists.isEmpty(chapters)}"
+            <div th:if="${chapterPage.content.isEmpty()}"
                  style="padding: 3rem; text-align: center; color: #64748b; font-style: italic;">
                 Truyện hiện tại chưa có chương nào được đăng tải.
             </div>
-            <a th:each="chapter : ${chapters}" th:href="@{/reader/{id}(id=${chapter.id})}" class="chapter-item">
+
+            <a th:each="chapter : ${chapterPage.content}" th:href="@{/reader/{id}(id=${chapter.id})}" class="chapter-item">
                 <span th:text="'Chương ' + ${chapter.chapterNumber} + ': ' + ${chapter.title}">Chương 1</span>
                 <span class="badge" th:text="${#temporals.format(chapter.createdAt, 'dd-MM-yyyy')}"
                       style="font-size: 0.75rem; background: transparent; border: none; color: #94a3b8;">01-01-2026</span>
             </a>
         </th:block>
+    </div>
+
+    <div class="pagination" th:if="${chapterPage.totalPages > 1}">
+        <a th:if="${chapterPage.hasPrevious()}"
+           th:href="@{/story/{slug}(slug=${story.slug}, page=${chapterPage.number - 1})}" class="page-btn">‹</a>
+
+        <a th:each="i : ${#numbers.sequence(
+        chapterPage.number - 2 < 0 ? 0 : chapterPage.number - 2,
+        chapterPage.number + 2 >= chapterPage.totalPages ? chapterPage.totalPages - 1 : chapterPage.number + 2)}"
+           th:href="@{/story/{slug}(slug=${story.slug}, page=${i})}" th:text="${i + 1}"
+           th:classappend="${i == chapterPage.number} ? ' active' : ''" class="page-btn">
+        </a>
+
+        <a th:if="${chapterPage.hasNext()}"
+           th:href="@{/story/{slug}(slug=${story.slug}, page=${chapterPage.number + 1})}" class="page-btn">›</a>
     </div>
 
 </div>

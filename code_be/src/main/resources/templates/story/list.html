@@ -94,6 +94,18 @@
             box-shadow: 0 0 0 3px rgba(99, 166, 255, 0.2);
         }
 
+        select.form-control {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-left: 1rem !important; /* Ghi đè padding cũ của form-control */
+            padding-right: 2.5rem !important;
+        }
+
         /* Định dạng nút Search */
         .btn-primary {
             background-color: #3b82f6; /* Màu xanh của nút Search */
@@ -168,9 +180,19 @@
         <div class="flex justify-between items-center mb-4">
             <h2>All Stories</h2>
         </div>
+
         <form th:action="@{/stories}" method="get" class="filters">
             <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Search by title or author..."
                 style="max-width: 300px;">
+
+            <div class="status-filter-wrapper">
+                <select name="status" class="form-control" style="width: 150px; cursor: pointer;">
+                    <option value="">All Status</option>
+                    <option value="ONGOING" th:selected="${status == 'ONGOING'}">Ongoing</option>
+                    <option value="COMPLETE" th:selected="${status == 'COMPLETE'}">Complete</option>
+                    <option value="PAUSE" th:selected="${status == 'PAUSE'}">Pause</option>
+                </select>
+            </div>
 
             <div class="genre-filter-wrapper">
                 <div class="custom-dropdown-btn" onclick="toggleGenreDropdown(event)">
@@ -194,17 +216,22 @@
 
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
+
         <div th:if="${#lists.isEmpty(stories)}" class="card text-center" style="padding: 3rem;">
             <h3>No stories found</h3>
             <p>Check back later or try adjusting your search filters.</p>
         </div>
+
         <div class="card" th:unless="${#lists.isEmpty(stories)}">
             <div class="grid" th:unless="${#lists.isEmpty(stories)}">
                 <a th:each="story : ${stories}" th:href="@{/story/{slug}(slug=${story.slug})}" class="story-card">
-                    <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-cover" alt="Cover">
+                    <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                         class="story-cover"
+                         alt="Cover">
                     <div th:unless="${story.coverImage}" class="story-cover flex items-center justify-center">
                         <span style="color: #94a3b8;">No Cover</span>
                     </div>
+
                     <div class="story-info">
                         <div class="story-title" th:text="${story.title}">Story Title</div>
                         <div class="story-meta flex justify-between">

@@ -357,8 +357,12 @@
             </th:block>
 
             <th:block th:if="${username != null}">
-                <th:block th:if="${isAdmin != null and isAdmin}">
+                <th:block th:if="${isAdmin}">
                     <a th:href="@{/admin/config}" style="color: #ffeb3b;">🛠 Quản trị</a>
+                </th:block>
+
+                <th:block th:if="${isMod and !isAdmin}">
+                    <a th:href="@{/mod/reports}" style="color: #ffeb3b;">🚩 Quản lý báo cáo</a>
                 </th:block>
 
                 <div class="user-dropdown" id="userDropdown">
@@ -418,9 +422,9 @@
                     <div class="grid">
                         <a th:each="story : ${topViewed}" th:href="@{/story/{slug}(slug=${story.slug})}"
                             class="story-card">
-                            <img class="story-cover"
-                                th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
-                                alt="Cover">
+                            <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                                 class="story-cover"
+                                 alt="Cover">
                             <h4 th:text="${story.title}"></h4>
                         </a>
                     </div>
@@ -431,8 +435,8 @@
                     <div class="grid">
                         <a th:each="story : ${topNominated}" th:href="@{/story/{slug}(slug=${story.slug})}"
                            class="story-card">
-                            <img class="story-cover"
-                                 th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
+                            <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                                 class="story-cover"
                                  alt="Cover">
                             <h4 th:text="${story.title}"></h4>
                         </a>
@@ -444,9 +448,9 @@
                     <div class="grid">
                         <a th:each="story : ${recentlyUpdated}" th:href="@{/story/{slug}(slug=${story.slug})}"
                             class="story-card">
-                            <img class="story-cover"
-                                th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
-                                alt="Cover">
+                            <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                                 class="story-cover"
+                                 alt="Cover">
                             <h4 th:text="${story.title}"></h4>
                         </a>
                     </div>
@@ -457,8 +461,8 @@
                     <div class="grid">
                         <div th:each="story : ${randomStories}" class="story-card">
                             <a th:href="@{/story/{slug}(slug=${story.slug})}">
-                                <img class="story-cover"
-                                     th:src="${story.coverImage != null ? story.coverImage : '/images/default-cover.jpg'}"
+                                <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
+                                     class="story-cover"
                                      alt="Cover">
                                 <h4 th:text="${story.title}"></h4>
                             </a>

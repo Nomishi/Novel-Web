@@ -98,7 +98,6 @@ public class StoryService {
         if (currentTickets <= 0) {
             throw new RuntimeException("Not enough nomination tickets");
         }
-
         user.setNominationTickets(currentTickets - 1);
         userRepository.save(user);
 

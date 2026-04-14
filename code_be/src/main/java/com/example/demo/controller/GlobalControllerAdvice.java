@@ -26,6 +26,10 @@ public class GlobalControllerAdvice {
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
             model.addAttribute("isAdmin", isAdmin);
+
+            boolean isMod = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_MOD"));
+            model.addAttribute("isMod", isMod);
         }
     }
 }

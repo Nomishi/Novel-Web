@@ -1,4 +1,5 @@
 package com.example.demo.controller;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +13,19 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ChatMessageRepository;
 import com.example.demo.entity.User;
 import lombok.RequiredArgsConstructor;
+import com.example.demo.entity.SystemConfig;
+import com.example.demo.repository.SystemConfigRepository;
+
 @Controller
 @RequiredArgsConstructor
+
 public class HomeController {
     private final StoryService storyService;
     private final ReadingProgressRepository progressRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final SystemConfigRepository systemConfigRepository;
+
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails != null) {
@@ -32,6 +39,7 @@ public class HomeController {
                         progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId()));
             }
         }
+
         model.addAttribute("topViewed", storyService.getTopViewedStories(8));
         model.addAttribute("topNominated", storyService.getTopNominatedStories(8));
         model.addAttribute("recentlyUpdated", storyService.getRecentlyUpdatedStories(8));
@@ -39,6 +47,22 @@ public class HomeController {
         model.addAttribute("chatMessages", chatMessageRepository
                 .findLatestMessages(PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "createdAt"))));
         model.addAttribute("topReaders", userRepository.findTop10ByOrderByReadingTimeSecondsDesc());
+
         return "index";
+    }
+
+    @GetMapping("/maintenance")
+    public String maintenancePage() {
+        //trạng thái
+        boolean isMaintenance = systemConfigRepository.findById("MAINTENANCE_MODE")
+                .map(SystemConfig::getValue)
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        //truy cập link khi TẮT bảo trì
+        if (!isMaintenance) {
+            return "redirect:/";
+        }
+
+        return "maintenance";
     }
 }

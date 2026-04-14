@@ -66,6 +66,7 @@ public class ReaderController {
             }
 
             return "reader/text-reader";
+
         } catch (Exception ex) {
             java.io.StringWriter sw = new java.io.StringWriter();
             ex.printStackTrace(new java.io.PrintWriter(sw));

@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 import com.example.demo.entity.Chapter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     List<Chapter> findByStoryIdOrderByChapterNumberAsc(Long storyId);
+
+    Page<Chapter> findByStoryId(Long storyId, Pageable pageable);
 
     Optional<Chapter> findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(Long storyId, Double chapterNumber);
     Optional<Chapter> findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(Long storyId, Double chapterNumber);
