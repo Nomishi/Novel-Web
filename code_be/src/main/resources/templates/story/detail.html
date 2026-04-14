@@ -249,7 +249,7 @@
 <div class="container" style="padding: 2rem 1rem;">
     <div class="story-header">
         <img th:src="${story.coverImage != null and story.coverImage != '' ? story.coverImage : '/images/default-cover.png'}"
-             class="story-cover"
+             class="story-cover-large"
              alt="Cover">
 
         <div class="story-details">
@@ -285,11 +285,11 @@
                 </div>
             </div>
             <div class="action-buttons" th:unless="${story.status.name() == 'LOCKED'}">
-                <a th:if="${not #lists.isEmpty(chapters)}"
-                   th:href="@{/reader/{chapterId}(chapterId=${chapters[0].id})}" class="btn-animated btn-read">
+                <a th:if="${not #lists.isEmpty(chapterPage.content)}"
+                   th:href="@{/reader/{chapterId}(chapterId=${chapterPage.content[0].id})}" class="btn-animated btn-read">
                     <i class="fas fa-book-open"></i> Đọc Từ Đầu
                 </a>
-                <a th:if="${#lists.isEmpty(chapters)}" href="#" class="btn-animated btn-read"
+                <a th:if="${#lists.isEmpty(chapterPage.content)}" href="#" class="btn-animated btn-read"
                    style="opacity: 0.5; pointer-events: none;">
                     <i class="fas fa-lock"></i> Chưa có chương
                 </a>

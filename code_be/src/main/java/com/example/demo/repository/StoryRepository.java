@@ -1,4 +1,5 @@
 package com.example.demo.repository;
+
 import com.example.demo.entity.Story;
 import com.example.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,9 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
+
 @Repository
+
 public interface StoryRepository extends JpaRepository<Story, Long>, JpaSpecificationExecutor<Story> {
     Optional<Story> findBySlug(String slug);
     Optional<Story> findById(Long id);

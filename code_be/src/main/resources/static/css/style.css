@@ -12,6 +12,31 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+body.dark-mode {
+    --card-bg: #1a202c;
+    --text-color: #e2e8f0;
+    --border-color: #2d3748;
+    --primary-color: #63b3ed;
+    --body-bg: #121212;
+}
+
+/* Áp dụng nền cho toàn bộ trang */
+body.dark-mode {
+    background-color: var(--body-bg) !important;
+}
+
+/* Đảm bảo comment-card cũng chuyển màu */
+body.dark-mode .comment-card,
+body.dark-mode .comment-box {
+    background: #2d3748;
+    color: var(--text-color);
+    border-color: #4a5568;
+}
+
+body.dark-mode .comment-item {
+    border-bottom-color: #4a5568;
+}
+
 /* TOPBAR & NAVIGATION */
 .navbar {
     display: flex;

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Story;
+import com.example.demo.entity.User;
 import com.example.demo.repository.StoryRepository;
 import com.example.demo.repository.ChapterRepository;
 import com.example.demo.repository.CommentRepository;
@@ -90,8 +91,7 @@ public class StoryService {
     @Transactional
     public Long nominateStory(Long storyId, String username) {
         Story story = getStoryById(storyId);
-
-        com.example.demo.entity.User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         long currentTickets = user.getNominationTickets() != null ? user.getNominationTickets() : 0L;
@@ -100,7 +100,6 @@ public class StoryService {
         }
         user.setNominationTickets(currentTickets - 1);
         userRepository.save(user);
-
         story.setNominations((story.getNominations() == null ? 0 : story.getNominations()) + 1);
         storyRepository.save(story);
 
