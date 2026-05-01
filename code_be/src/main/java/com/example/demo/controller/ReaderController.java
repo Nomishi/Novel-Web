@@ -28,8 +28,8 @@ public class ReaderController {
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Chapter chapter = chapterService.getChapterById(chapterId);
+
             if (chapter.getStory().getStatus() == Story.StoryStatus.LOCKED) {
-                // Chặn truy cập nội dung
                 return "redirect:/story/" + chapter.getStory().getSlug();
             }
 
@@ -46,12 +46,15 @@ public class ReaderController {
                 if (user != null) {
                     Optional<ReadingProgress> existingProgressOpt = progressRepository
                             .findByUserIdAndStoryId(user.getId(), chapter.getStory().getId());
+
                     ReadingProgress progress;
+
                     if (existingProgressOpt.isEmpty()) {
                         progress = ReadingProgress.builder().user(user).story(chapter.getStory()).build();
                     } else {
                         progress = existingProgressOpt.get();
                     }
+
                     if (progress.getCurrentChapter() == null
                             || !progress.getCurrentChapter().getId().equals(chapter.getId())) {
                         Long currentChapters = user.getTotalReadChapters() != null ? user.getTotalReadChapters() : 0L;
@@ -59,6 +62,7 @@ public class ReaderController {
                         progress.setCurrentChapter(chapter);
                     }
                     progressRepository.save(progress);
+
                     long totalStories = progressRepository.countByUserId(user.getId());
                     user.setTotalReadStories(totalStories);
                     userRepository.save(user);

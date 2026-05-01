@@ -15,7 +15,6 @@ public class NotificationService {
     private final UserRepository userRepository; // Tiêm thêm để xử lý logic theo Username
 
     public void notifyNewChapter(Chapter chapter) {
-        // Chỉ gửi thông báo cho những người bật tính năng nhận thông báo
         List<Bookshelf> followers = bookshelfRepository.findByStoryIdAndNotifyOnNewChapterTrue(chapter.getStory().getId());
         for (Bookshelf follow : followers) {
             Notification notif = Notification.builder()

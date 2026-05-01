@@ -39,10 +39,11 @@ public class AuthService {
                 .displayName(username)
                 .readingTimeSeconds(0L)
                 .build();
+
         Role memberRole = roleRepository.findByName("ROLE_MEMBER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_MEMBER")));
         user.getRoles().add(memberRole);
-        //CẤP TỰ ĐỘNG ROLE_UPLOADER
+
         Role uploaderRole = roleRepository.findByName("ROLE_UPLOADER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_UPLOADER")));
         user.getRoles().add(uploaderRole);

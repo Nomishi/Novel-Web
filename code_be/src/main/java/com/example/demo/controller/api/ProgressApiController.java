@@ -1,4 +1,5 @@
 package com.example.demo.controller.api;
+
 import com.example.demo.entity.Chapter;
 import com.example.demo.entity.ReadingProgress;
 import com.example.demo.entity.Story;
@@ -13,14 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/api/progress")
 @RequiredArgsConstructor
+
 public class ProgressApiController {
     private final ReadingProgressRepository progressRepository;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
     private final ChapterRepository chapterRepository;
+
     @PostMapping("/save")
     public ResponseEntity<?> saveProgress(@RequestBody ProgressRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -40,6 +44,7 @@ public class ProgressApiController {
         }
         return ResponseEntity.ok().build();
     }
+
     @Data
     static class ProgressRequest {
         private Long storyId;

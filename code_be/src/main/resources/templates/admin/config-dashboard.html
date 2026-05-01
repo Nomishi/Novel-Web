@@ -126,31 +126,6 @@
     <div class="dashboard-grid">
         <div class="card">
             <div class="card-content">
-                <h3>System Configuration</h3>
-                <form id="configForm" th:action="@{/admin/config/update}" method="post">
-                    <div class="toggle-switch">
-                        <div>
-                            <strong style="display: block;">Maintenance Mode</strong>
-                            <small style="color: #718096;">Restricts access to admins only.</small>
-                        </div>
-                        <input type="checkbox" name="maintenanceMode" th:checked="${maintenanceMode}" style="width: 20px; height: 20px; cursor: pointer;">
-                    </div>
-                    <div class="toggle-switch">
-                        <div>
-                            <strong style="display: block;">Ads Enabled</strong>
-                            <small style="color: #718096;">Toggle site-wide advertisements.</small>
-                        </div>
-                        <input type="checkbox" name="adsEnabled" th:checked="${adsEnabled}" style="width: 20px; height: 20px; cursor: pointer;">
-                    </div>
-                </form>
-            </div>
-            <button type="submit" form="configForm" class="btn-full btn-admin-primary">
-                <i class="fa-solid fa-save" style="margin-right: 8px;"></i> Save Changes
-            </button>
-        </div>
-
-        <div class="card">
-            <div class="card-content">
                 <h3>Content Admin</h3>
                 <p style="font-size: 0.875rem; color: #718096; margin-bottom: 1.5rem;">
                     Organize and manage story genres and classifications.
@@ -180,10 +155,6 @@
                 <i class="fa-solid fa-flag" style="margin-right: 8px;"></i> Quản lý báo cáo
             </a>
         </div>
-
-    </div>
-
-    <div class="dashboard-grid" style="margin-top: 2rem; border-top: 2px solid #e2e8f0; padding-top: 2rem;">
 
         <div class="card">
             <div class="card-content">
